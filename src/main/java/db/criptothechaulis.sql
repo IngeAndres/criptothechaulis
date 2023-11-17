@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-11-2023 a las 02:45:26
+-- Tiempo de generación: 16-11-2023 a las 19:11:46
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -24,66 +24,79 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `cliente`
---
-
-CREATE TABLE `cliente` (
-  `codigoCliente` int(11) NOT NULL,
-  `codigoTipoDocumento` int(11) NOT NULL,
-  `docuClie` varchar(45) NOT NULL,
-  `appaClie` varchar(45) NOT NULL,
-  `apmaClie` varchar(45) NOT NULL,
-  `nombClie` varchar(45) NOT NULL,
-  `telfClie` varchar(45) NOT NULL,
-  `direClie` varchar(45) NOT NULL,
-  `codigoEstado` int(11) NOT NULL,
-  `codigoDistrito` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `cliente`
---
-
-INSERT INTO `cliente` (`codigoCliente`, `codigoTipoDocumento`, `docuClie`, `appaClie`, `apmaClie`, `nombClie`, `telfClie`, `direClie`, `codigoEstado`, `codigoDistrito`) VALUES
-(1, 1, '72847211', 'Caurino', 'Collantes', 'Anthony Javier', '925216367', 'Av. Miguel Grau N° 450 ', 1, 1),
-(3, 1, '72755161', 'Gómez', 'Salvo', 'Andrés Eduardo', '906213755', 'Av. Las Palmeras S/N', 1, 1),
-(4, 1, '74999126', 'Conejo', 'Sánchez', 'Jeanpierre Eduardo', '917476705', 'Psj. Bellavista S/N', 1, 2);
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `cuenta`
 --
 
 CREATE TABLE `cuenta` (
-  `codigoCuenta` int(11) NOT NULL,
-  `codigoCliente` int(11) NOT NULL,
-  `numeCuenta` varchar(45) NOT NULL,
-  `codigoTipoCuenta` int(11) NOT NULL,
-  `saldoCuenta` double NOT NULL,
-  `fechApertCuenta` date NOT NULL,
-  `codigoEstado` int(11) NOT NULL
+  `IdCuenta` int(11) NOT NULL,
+  `IdUsuario` int(11) NOT NULL,
+  `IdTipoCuenta` int(11) NOT NULL,
+  `NumbCuenta` char(16) NOT NULL,
+  `CCI` char(20) NOT NULL,
+  `SaldoDisponible` double NOT NULL,
+  `SaldoContable` double NOT NULL,
+  `EstadoCuenta` varchar(25) NOT NULL,
+  `FechaApertura` date NOT NULL,
+  `FechaCierre` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `cuenta`
---
-
-INSERT INTO `cuenta` (`codigoCuenta`, `codigoCliente`, `numeCuenta`, `codigoTipoCuenta`, `saldoCuenta`, `fechApertCuenta`, `codigoEstado`) VALUES
-(1, 1, '874596325410265', 1, 5500, '2023-10-10', 1),
-(3, 3, '825885461831713', 1, 7500, '2023-11-06', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `deposito`
+-- Estructura de tabla para la tabla `datospersonales`
 --
 
-CREATE TABLE `deposito` (
-  `codigoDeposito` int(11) NOT NULL,
-  `codigoCuenta` int(11) NOT NULL,
-  `montoDeposito` double NOT NULL,
-  `fechDeposito` datetime NOT NULL
+CREATE TABLE `datospersonales` (
+  `IdPersona` int(11) NOT NULL,
+  `IdTipoDocumento` int(11) NOT NULL,
+  `DocuPersona` varchar(12) NOT NULL,
+  `RUC` char(11) NOT NULL,
+  `NombPersona` varchar(80) NOT NULL,
+  `ApPaPersona` varchar(50) NOT NULL,
+  `ApMaPersona` varchar(50) NOT NULL,
+  `GenePersona` char(1) NOT NULL,
+  `FechPersona` date NOT NULL,
+  `DirePersona` varchar(120) NOT NULL,
+  `CeluPersona` varchar(9) NOT NULL,
+  `EmailPersona` varchar(250) NOT NULL,
+  `IdDistrito` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `datospersonales`
+--
+
+INSERT INTO `datospersonales` (`IdPersona`, `IdTipoDocumento`, `DocuPersona`, `RUC`, `NombPersona`, `ApPaPersona`, `ApMaPersona`, `GenePersona`, `FechPersona`, `DirePersona`, `CeluPersona`, `EmailPersona`, `IdDistrito`) VALUES
+(1, 1, '70891324', '20547896301', 'Juan', 'Pérez', 'López', 'M', '1990-05-15', 'Av. Principal 123', '987654321', 'jperez@gmail.com', 4),
+(2, 2, '59823467', '17459680201', 'María', 'González', 'Martínez', 'F', '1985-08-22', 'Jr. Lima 456', '951234567', 'mgonzalez@gmail.com', 12),
+(3, 1, '45678901', '10293847561', 'Luis', 'Rodríguez', 'Sánchez', 'M', '1998-02-10', 'Calle 5 de Mayo 789', '976543210', 'lrodriguez@gmail.com', 21),
+(4, 1, '82345690', '30564789231', 'Ana', 'Hernández', 'Ramírez', 'F', '1980-11-28', 'Ovalo Los Pinos 234', '945678901', 'ahernandez@gmail.com', 5),
+(5, 2, '38901245', '17856324012', 'Carlos', 'García', 'Torres', 'M', '1995-07-03', 'Urb. Santa Rosa Mz. 12', '910123456', 'cgarcia@gmail.com', 16),
+(6, 1, '67890543', '25019483756', 'Laura', 'Martínez', 'Díaz', 'F', '1987-04-18', 'Callejón Los Pájaros 567', '965432109', 'lmartinez@gmail.com', 7),
+(7, 2, '12456789', '36521870943', 'Pedro', 'López', 'Vargas', 'M', '1992-09-05', 'Av. Primavera 890', '932109876', 'plopez@gmail.com', 10),
+(8, 1, '89012456', '51023746829', 'Elena', 'Sánchez', 'Gómez', 'F', '1983-12-12', 'Jr. Libertad 123', '998765432', 'esanchez@gmail.com', 2),
+(9, 1, '56389012', '67894510237', 'Javier', 'Ramírez', 'Pérez', 'M', '1993-06-20', 'Av. Los Laureles 456', '927654321', 'jramirez@gmail.com', 14),
+(10, 2, '34012567', '12345098761', 'Silvia', 'Díaz', 'Flores', 'F', '1989-03-25', 'Calle Principal 789', '983210987', 'sdiaz@gmail.com', 26),
+(11, 1, '72755161', '19382746501', 'Andrés', 'Gómez', 'Salvo', 'M', '2001-01-08', 'Av. América 456', '906213755', 'agomez@gmail.com', 12),
+(12, 1, '72847211', '87654321012', 'Anthony', 'Caurino', 'Collantes', 'M', '2004-07-10', 'Calle Los Olivos 789', '925216367', 'acaurino@gmail.com', 12),
+(13, 1, '74999126', '45321967804', 'Jeanpierre', 'Conejo', 'Sánchez', 'M', '1995-09-06', 'Jr. Puno 234', '917476705', 'jconejo@gmail.com', 5),
+(14, 1, '73594630', '12983750465', 'Carlos', 'Sipan', 'Lozano', 'M', '2003-08-23', 'Urb. San Isidro Mz. 12', '980303113', 'csipan@gmail.com', 13),
+(15, 1, '75146976', '90876543210', 'Denver', 'Chiroque', 'Paulino', 'M', '2003-10-26', 'Av. Los Robles 890', '928840886', 'dchiroque@gmail.com', 20);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalleprestamo`
+--
+
+CREATE TABLE `detalleprestamo` (
+  `IdDetallePrestamo` int(11) NOT NULL,
+  `IdTipoInformacionBien` int(11) NOT NULL,
+  `CuotasAdicionales` char(1) NOT NULL,
+  `Monto` double NOT NULL,
+  `Moneda` varchar(25) NOT NULL,
+  `Tasa` double NOT NULL,
+  `Tiempo` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -93,42 +106,77 @@ CREATE TABLE `deposito` (
 --
 
 CREATE TABLE `distrito` (
-  `codigoDistrito` int(11) NOT NULL,
-  `nombreDistrito` varchar(45) NOT NULL
+  `IdDistrito` int(11) NOT NULL,
+  `DenoDistrito` varchar(50) NOT NULL,
+  `ProvDistrito` varchar(50) NOT NULL,
+  `DepaDistrito` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `distrito`
 --
 
-INSERT INTO `distrito` (`codigoDistrito`, `nombreDistrito`) VALUES
-(1, 'Vegueta'),
-(2, 'Hualmay'),
-(3, 'Barranca'),
-(4, 'Huacho'),
-(5, 'Huaura'),
-(6, 'Aucallama'),
-(7, 'Carquin'),
-(8, 'Santa Maria');
+INSERT INTO `distrito` (`IdDistrito`, `DenoDistrito`, `ProvDistrito`, `DepaDistrito`) VALUES
+(1, 'Ámbar', 'Huaura', 'Lima'),
+(2, 'Caleta de Carquín', 'Huaura', 'Lima'),
+(3, 'Checras', 'Huaura', 'Lima'),
+(4, 'Huacho', 'Huaura', 'Lima'),
+(5, 'Hualmay', 'Huaura', 'Lima'),
+(6, 'Huaura', 'Huaura', 'Lima'),
+(7, 'Leoncio Prado', 'Huaura', 'Lima'),
+(8, 'Paccho', 'Huaura', 'Lima'),
+(9, 'Santa Leonor', 'Huaura', 'Lima'),
+(10, 'Santa María', 'Huaura', 'Lima'),
+(11, 'Sayán', 'Huaura', 'Lima'),
+(12, 'Végueta', 'Huaura', 'Lima'),
+(13, 'Barranca', 'Barranca', 'Lima'),
+(14, 'Paramonga', 'Barranca', 'Lima'),
+(15, 'Pativilca', 'Barranca', 'Lima'),
+(16, 'Supe', 'Barranca', 'Lima'),
+(17, 'Supe Puerto', 'Barranca', 'Lima'),
+(18, 'Atavillos Alto', 'Huaral', 'Lima'),
+(19, 'Atavillos Bajo', 'Huaral', 'Lima'),
+(20, 'Aucallama', 'Huaral', 'Lima'),
+(21, 'Chancay', 'Huaral', 'Lima'),
+(22, 'Huaral', 'Huaral', 'Lima'),
+(23, 'Ihuarí', 'Huaral', 'Lima'),
+(24, 'Lampían', 'Huaral', 'Lima'),
+(25, 'Pacaraos', 'Huaral', 'Lima'),
+(26, 'San Miguel de Acos', 'Huaral', 'Lima'),
+(27, 'Santa Cruz de Andamarca', 'Huaral', 'Lima'),
+(28, 'Sumbilca', 'Huaral', 'Lima'),
+(29, 'Veintisiete de Noviembre', 'Huaral', 'Lima');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `estado`
+-- Estructura de tabla para la tabla `operacionescuentaspropias`
 --
 
-CREATE TABLE `estado` (
-  `codigoEstado` int(11) NOT NULL,
-  `nombEsta` varchar(10) NOT NULL
+CREATE TABLE `operacionescuentaspropias` (
+  `IdOperacionCP` int(11) NOT NULL,
+  `IdTipoOperacion` int(11) NOT NULL,
+  `IdCuenta` int(11) NOT NULL,
+  `MontoOperacionCP` double NOT NULL,
+  `MonedaOperacionCP` varchar(20) NOT NULL,
+  `FechaOperacionCP` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Volcado de datos para la tabla `estado`
+-- Estructura de tabla para la tabla `operacionesotrascuentas`
 --
 
-INSERT INTO `estado` (`codigoEstado`, `nombEsta`) VALUES
-(1, 'Activo'),
-(2, 'Inactivo');
+CREATE TABLE `operacionesotrascuentas` (
+  `IdOperacionOC` int(11) NOT NULL,
+  `IdTipoOperacion` int(11) NOT NULL,
+  `IdCuentaOrigen` int(11) NOT NULL,
+  `IdCuentaDestino` int(11) NOT NULL,
+  `MontoOperacionOC` double NOT NULL,
+  `MonedaOperacionOC` varchar(20) NOT NULL,
+  `FechaOperacionOC` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -137,34 +185,31 @@ INSERT INTO `estado` (`codigoEstado`, `nombEsta`) VALUES
 --
 
 CREATE TABLE `prestamo` (
-  `codigoPrestamo` int(11) NOT NULL,
-  `codigoCliente` int(11) NOT NULL,
-  `plazoPrestamo` varchar(45) NOT NULL,
-  `tasasPrestamo` double NOT NULL,
-  `totalPedidoPrestamo` double NOT NULL,
-  `totalPagarPrestamo` double NOT NULL,
-  `fechPrestamo` datetime NOT NULL
+  `IdPrestamo` int(11) NOT NULL,
+  `IdTipoPrestamo` int(11) NOT NULL,
+  `IdCuenta` int(11) NOT NULL,
+  `IdTipoComprobante` int(11) NOT NULL,
+  `IdDetallePrestamo` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `prestamo`
---
-
-INSERT INTO `prestamo` (`codigoPrestamo`, `codigoCliente`, `plazoPrestamo`, `tasasPrestamo`, `totalPedidoPrestamo`, `totalPagarPrestamo`, `fechPrestamo`) VALUES
-(1, 1, '100', 10, 11000, 10000, '2023-11-06 14:56:39');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `retiro`
+-- Estructura de tabla para la tabla `tipocomprobante`
 --
 
-CREATE TABLE `retiro` (
-  `codigoRetiro` int(11) NOT NULL,
-  `codigoCuenta` int(11) NOT NULL,
-  `montoRetiro` double NOT NULL,
-  `fechRetiro` date NOT NULL
+CREATE TABLE `tipocomprobante` (
+  `IdTipoComprobante` int(11) NOT NULL,
+  `DenoTipoComprobante` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipocomprobante`
+--
+
+INSERT INTO `tipocomprobante` (`IdTipoComprobante`, `DenoTipoComprobante`) VALUES
+(1, 'Virtual'),
+(2, 'Físico');
 
 -- --------------------------------------------------------
 
@@ -173,18 +218,21 @@ CREATE TABLE `retiro` (
 --
 
 CREATE TABLE `tipocuenta` (
-  `codigoTipoCuenta` int(11) NOT NULL,
-  `nombTipoCuenta` varchar(45) NOT NULL
+  `IdTipoCuenta` int(11) NOT NULL,
+  `DenoTipoCuenta` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `tipocuenta`
 --
 
-INSERT INTO `tipocuenta` (`codigoTipoCuenta`, `nombTipoCuenta`) VALUES
+INSERT INTO `tipocuenta` (`IdTipoCuenta`, `DenoTipoCuenta`) VALUES
 (1, 'Cuenta Corriente'),
-(2, 'Cuenta Ahorro'),
-(3, 'Cuenta Inversion');
+(2, 'Cuenta de Ahorro'),
+(3, 'Cuenta de Plazo Fijo'),
+(4, 'Cuenta sueldo'),
+(5, 'Cuenta CTS'),
+(6, 'Cuenta Independencia');
 
 -- --------------------------------------------------------
 
@@ -193,39 +241,103 @@ INSERT INTO `tipocuenta` (`codigoTipoCuenta`, `nombTipoCuenta`) VALUES
 --
 
 CREATE TABLE `tipodocumento` (
-  `codigoTipoDocumento` int(11) NOT NULL,
-  `nombTipoDocumento` varchar(45) NOT NULL
+  `IdTipoDocumento` int(11) NOT NULL,
+  `DenoTipoDocumento` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `tipodocumento`
 --
 
-INSERT INTO `tipodocumento` (`codigoTipoDocumento`, `nombTipoDocumento`) VALUES
+INSERT INTO `tipodocumento` (`IdTipoDocumento`, `DenoTipoDocumento`) VALUES
 (1, 'DNI'),
-(2, 'Carnet De Extranjeria');
+(2, 'Carnet de Extranjería');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `transferencia`
+-- Estructura de tabla para la tabla `tipoinformacionbien`
 --
 
-CREATE TABLE `transferencia` (
-  `codigoTransferencia` int(11) NOT NULL,
-  `codigoCuentaOrigen` int(11) NOT NULL,
-  `montoTransferencia` double NOT NULL,
-  `codigoCuentaDestino` int(11) NOT NULL,
-  `fechTransferencia` datetime NOT NULL
+CREATE TABLE `tipoinformacionbien` (
+  `IdTipoInformacionBien` int(11) NOT NULL,
+  `DenoTipoInformacionBien` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `transferencia`
+-- Volcado de datos para la tabla `tipoinformacionbien`
 --
 
-INSERT INTO `transferencia` (`codigoTransferencia`, `codigoCuentaOrigen`, `montoTransferencia`, `codigoCuentaDestino`, `fechTransferencia`) VALUES
-(1, 1, 1000, 3, '2023-11-06 16:20:35'),
-(2, 1, 500, 3, '2023-11-06 16:21:56');
+INSERT INTO `tipoinformacionbien` (`IdTipoInformacionBien`, `DenoTipoInformacionBien`) VALUES
+(1, 'Sin Seguro'),
+(2, 'Inmueble Casa'),
+(3, 'Inmueble Departamento');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipooperacion`
+--
+
+CREATE TABLE `tipooperacion` (
+  `IdTipoOperacion` int(11) NOT NULL,
+  `DenoTipoOperacion` varchar(60) NOT NULL,
+  `CategoriaTipoOperacion` varchar(60) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipooperacion`
+--
+
+INSERT INTO `tipooperacion` (`IdTipoOperacion`, `DenoTipoOperacion`, `CategoriaTipoOperacion`) VALUES
+(1, 'Depósito', 'Cuentas Propias'),
+(2, 'Retiro', 'Cuentas Propias'),
+(3, 'Transferencia', 'Otras Cuentas');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipoprestamo`
+--
+
+CREATE TABLE `tipoprestamo` (
+  `IdTipoPrestamo` int(11) NOT NULL,
+  `DenoTipoPrestamo` varchar(60) NOT NULL,
+  `CategoriaTipoPrestamo` varchar(60) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipoprestamo`
+--
+
+INSERT INTO `tipoprestamo` (`IdTipoPrestamo`, `DenoTipoPrestamo`, `CategoriaTipoPrestamo`) VALUES
+(1, 'Préstamo Libre Disponibilidad', 'Personal'),
+(2, 'Préstamo Auto Seminuevo', 'Personal'),
+(3, 'Préstamo de Estudio', 'Personal'),
+(4, 'Préstamo Convenio', 'Personal'),
+(5, 'Préstamo Mi Vivienda', 'Mi Vivienda'),
+(6, 'Préstamo Mi Vivienda Sostenible', 'Mi Vivienda');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipousuario`
+--
+
+CREATE TABLE `tipousuario` (
+  `IdTipoUsuario` int(11) NOT NULL,
+  `DenoTipoUsuario` varchar(50) NOT NULL,
+  `NivelTipoUsuario` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipousuario`
+--
+
+INSERT INTO `tipousuario` (`IdTipoUsuario`, `DenoTipoUsuario`, `NivelTipoUsuario`) VALUES
+(1, 'Empleado', 'Administrador'),
+(2, 'Empleado', 'Empleado'),
+(3, 'Usuario', 'Usuario');
 
 -- --------------------------------------------------------
 
@@ -234,207 +346,293 @@ INSERT INTO `transferencia` (`codigoTransferencia`, `codigoCuentaOrigen`, `monto
 --
 
 CREATE TABLE `usuario` (
-  `codiUsua` char(8) NOT NULL,
-  `logiUsua` varchar(45) NOT NULL,
-  `passUsua` varchar(64) NOT NULL,
-  `authUsua` varchar(16) NOT NULL
+  `IdUsuario` int(11) NOT NULL,
+  `IdTipoUsuario` int(11) NOT NULL,
+  `IdPersona` int(11) NOT NULL,
+  `DenoUsuario` varchar(50) NOT NULL,
+  `PassUsuario` varchar(64) NOT NULL,
+  `Autenticacion` varchar(16) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`codiUsua`, `logiUsua`, `passUsua`, `authUsua`) VALUES
-('40801418', 'kike', 'c3de533e9b7fe63b79f648687a30d2861edd92fe7c3cd1f2c485e0a605367624', 'N6SLSEWL44JEFGCC'),
-('72755161', 'andres', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', '62HIIDOAKBBSS3KP'),
-('72847211', 'anthony', '502913bfdd49eab564282dff101e6d167321237eeec66eedb2a438ed80fdeaa0', 'ITFXWVF57BXI4HLI'),
-('73594630', 'carlos', '7b85175b455060e3237e925f023053ca9515e8682a83c8b09911c724a1f8b75f', ''),
-('74999126', 'jeanpierre', 'fbcc8fa66b9a007dc3649ee989950d38f12ed91b9f18a3d215b04ff77546dca0', 'ADT23WC2ZIEWVVHK'),
-('75149676', 'denver', '4c6eb87b502e3e019acbd4b1e579bd1566104abc0914f5186df63e4833c993c2', '');
+INSERT INTO `usuario` (`IdUsuario`, `IdTipoUsuario`, `IdPersona`, `DenoUsuario`, `PassUsuario`, `Autenticacion`) VALUES
+(1, 1, 11, 'andres', '0a92efb1b91ac02c858ab205fbb6baf44d67e8d1e625600a11020cfae50065da', NULL),
+(2, 1, 12, 'anthony', '502913bfdd49eab564282dff101e6d167321237eeec66eedb2a438ed80fdeaa0', NULL),
+(3, 1, 13, 'jeanpierre', 'fbcc8fa66b9a007dc3649ee989950d38f12ed91b9f18a3d215b04ff77546dca0', NULL),
+(4, 1, 14, 'carlos', '7b85175b455060e3237e925f023053ca9515e8682a83c8b09911c724a1f8b75f', NULL),
+(5, 1, 15, 'denver', '4c6eb87b502e3e019acbd4b1e579bd1566104abc0914f5186df63e4833c993c2', NULL),
+(6, 3, 1, 'juan', 'ed08c290d7e22f7bb324b15cbadce35b0b348564fd2d5f95752388d86d71bcca', NULL),
+(7, 3, 2, 'maria', '94aec9fbed989ece189a7e172c9cf41669050495152bc4c1dbf2a38d7fd85627', NULL),
+(8, 3, 3, 'luis', 'c5ff177a86e82441f93e3772da700d5f6838157fa1bfdc0bb689d7f7e55e7aba', NULL),
+(9, 3, 4, 'ana', '24d4b96f58da6d4a8512313bbd02a28ebf0ca95dec6e4c86ef78ce7f01e788ac', NULL),
+(10, 3, 5, 'carlos', '7b85175b455060e3237e925f023053ca9515e8682a83c8b09911c724a1f8b75f', NULL),
+(11, 3, 6, 'laura', '5d702eb07928ed7b84626b777c86c39bf4cb403d4024f031d5f97a4b0664421f', NULL),
+(12, 3, 7, 'pedro', 'ee5cd7d5d96c8874117891b2c92a036f96918e66c102bc698ae77542c186f981', NULL),
+(13, 3, 8, 'elena', '0ce93c9606f0685bf60e051265891d256381f639d05c0aec67c84eec49d33cc1', NULL),
+(14, 3, 9, 'javier', '384dac3368de6f658d7bc66e8fd4c8206b91c17a9084498948c7dd6e44d4a055', NULL),
+(15, 3, 10, 'silvia', '2d51a3b3ca1cdf790485938566c720527b2ebbe5a1f0326316ce63aafbc385d4', NULL);
 
 --
 -- Índices para tablas volcadas
 --
 
 --
--- Indices de la tabla `cliente`
---
-ALTER TABLE `cliente`
-  ADD PRIMARY KEY (`codigoCliente`),
-  ADD KEY `codigoTipoDocumento` (`codigoTipoDocumento`),
-  ADD KEY `codigoEstado` (`codigoEstado`),
-  ADD KEY `codigoDistrito` (`codigoDistrito`);
-
---
 -- Indices de la tabla `cuenta`
 --
 ALTER TABLE `cuenta`
-  ADD PRIMARY KEY (`codigoCuenta`),
-  ADD KEY `codigoCliente` (`codigoCliente`),
-  ADD KEY `codigoTipoCuenta` (`codigoTipoCuenta`),
-  ADD KEY `codigoEstado` (`codigoEstado`);
+  ADD PRIMARY KEY (`IdCuenta`),
+  ADD KEY `IdUsuario` (`IdUsuario`),
+  ADD KEY `IdTipoCuenta` (`IdTipoCuenta`);
 
 --
--- Indices de la tabla `deposito`
+-- Indices de la tabla `datospersonales`
 --
-ALTER TABLE `deposito`
-  ADD PRIMARY KEY (`codigoDeposito`),
-  ADD KEY `codigoCuenta` (`codigoCuenta`);
+ALTER TABLE `datospersonales`
+  ADD PRIMARY KEY (`IdPersona`),
+  ADD KEY `IdTipoDocumento` (`IdTipoDocumento`),
+  ADD KEY `IdDistrito` (`IdDistrito`);
+
+--
+-- Indices de la tabla `detalleprestamo`
+--
+ALTER TABLE `detalleprestamo`
+  ADD PRIMARY KEY (`IdDetallePrestamo`),
+  ADD KEY `IdTipoInformacionBien` (`IdTipoInformacionBien`);
 
 --
 -- Indices de la tabla `distrito`
 --
 ALTER TABLE `distrito`
-  ADD PRIMARY KEY (`codigoDistrito`);
+  ADD PRIMARY KEY (`IdDistrito`);
 
 --
--- Indices de la tabla `estado`
+-- Indices de la tabla `operacionescuentaspropias`
 --
-ALTER TABLE `estado`
-  ADD PRIMARY KEY (`codigoEstado`);
+ALTER TABLE `operacionescuentaspropias`
+  ADD PRIMARY KEY (`IdOperacionCP`),
+  ADD KEY `IdTipoOperacion` (`IdTipoOperacion`),
+  ADD KEY `IdCuenta` (`IdCuenta`);
+
+--
+-- Indices de la tabla `operacionesotrascuentas`
+--
+ALTER TABLE `operacionesotrascuentas`
+  ADD PRIMARY KEY (`IdOperacionOC`),
+  ADD KEY `IdTipoOperacion` (`IdTipoOperacion`),
+  ADD KEY `IdCuentaOrigen` (`IdCuentaOrigen`),
+  ADD KEY `IdCuentaDestino` (`IdCuentaDestino`);
 
 --
 -- Indices de la tabla `prestamo`
 --
 ALTER TABLE `prestamo`
-  ADD PRIMARY KEY (`codigoPrestamo`),
-  ADD KEY `codigoCliente` (`codigoCliente`);
+  ADD PRIMARY KEY (`IdPrestamo`),
+  ADD KEY `IdTipoPrestamo` (`IdTipoPrestamo`),
+  ADD KEY `IdCuenta` (`IdCuenta`),
+  ADD KEY `IdTipoComprobante` (`IdTipoComprobante`),
+  ADD KEY `IdDetallePrestamo` (`IdDetallePrestamo`);
 
 --
--- Indices de la tabla `retiro`
+-- Indices de la tabla `tipocomprobante`
 --
-ALTER TABLE `retiro`
-  ADD PRIMARY KEY (`codigoRetiro`),
-  ADD KEY `codigoCuenta` (`codigoCuenta`);
+ALTER TABLE `tipocomprobante`
+  ADD PRIMARY KEY (`IdTipoComprobante`);
 
 --
 -- Indices de la tabla `tipocuenta`
 --
 ALTER TABLE `tipocuenta`
-  ADD PRIMARY KEY (`codigoTipoCuenta`);
+  ADD PRIMARY KEY (`IdTipoCuenta`);
 
 --
 -- Indices de la tabla `tipodocumento`
 --
 ALTER TABLE `tipodocumento`
-  ADD PRIMARY KEY (`codigoTipoDocumento`);
+  ADD PRIMARY KEY (`IdTipoDocumento`);
 
 --
--- Indices de la tabla `transferencia`
+-- Indices de la tabla `tipoinformacionbien`
 --
-ALTER TABLE `transferencia`
-  ADD PRIMARY KEY (`codigoTransferencia`),
-  ADD KEY `codigoCuentaOrigen` (`codigoCuentaOrigen`),
-  ADD KEY `codigoCuentaDestino` (`codigoCuentaDestino`);
+ALTER TABLE `tipoinformacionbien`
+  ADD PRIMARY KEY (`IdTipoInformacionBien`);
+
+--
+-- Indices de la tabla `tipooperacion`
+--
+ALTER TABLE `tipooperacion`
+  ADD PRIMARY KEY (`IdTipoOperacion`);
+
+--
+-- Indices de la tabla `tipoprestamo`
+--
+ALTER TABLE `tipoprestamo`
+  ADD PRIMARY KEY (`IdTipoPrestamo`);
+
+--
+-- Indices de la tabla `tipousuario`
+--
+ALTER TABLE `tipousuario`
+  ADD PRIMARY KEY (`IdTipoUsuario`);
 
 --
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`codiUsua`);
+  ADD PRIMARY KEY (`IdUsuario`),
+  ADD KEY `IdTipoUsuario` (`IdTipoUsuario`),
+  ADD KEY `IdPersona` (`IdPersona`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT de la tabla `cliente`
---
-ALTER TABLE `cliente`
-  MODIFY `codigoCliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
 -- AUTO_INCREMENT de la tabla `cuenta`
 --
 ALTER TABLE `cuenta`
-  MODIFY `codigoCuenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `IdCuenta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `deposito`
+-- AUTO_INCREMENT de la tabla `datospersonales`
 --
-ALTER TABLE `deposito`
-  MODIFY `codigoDeposito` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `datospersonales`
+  MODIFY `IdPersona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de la tabla `detalleprestamo`
+--
+ALTER TABLE `detalleprestamo`
+  MODIFY `IdDetallePrestamo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `distrito`
 --
 ALTER TABLE `distrito`
-  MODIFY `codigoDistrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `IdDistrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
+-- AUTO_INCREMENT de la tabla `operacionescuentaspropias`
+--
+ALTER TABLE `operacionescuentaspropias`
+  MODIFY `IdOperacionCP` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `operacionesotrascuentas`
+--
+ALTER TABLE `operacionesotrascuentas`
+  MODIFY `IdOperacionOC` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `prestamo`
 --
 ALTER TABLE `prestamo`
-  MODIFY `codigoPrestamo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdPrestamo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `retiro`
+-- AUTO_INCREMENT de la tabla `tipocomprobante`
 --
-ALTER TABLE `retiro`
-  MODIFY `codigoRetiro` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `tipocomprobante`
+  MODIFY `IdTipoComprobante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `tipocuenta`
 --
 ALTER TABLE `tipocuenta`
-  MODIFY `codigoTipoCuenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `IdTipoCuenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `tipodocumento`
 --
 ALTER TABLE `tipodocumento`
-  MODIFY `codigoTipoDocumento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `IdTipoDocumento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `transferencia`
+-- AUTO_INCREMENT de la tabla `tipoinformacionbien`
 --
-ALTER TABLE `transferencia`
-  MODIFY `codigoTransferencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `tipoinformacionbien`
+  MODIFY `IdTipoInformacionBien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `tipooperacion`
+--
+ALTER TABLE `tipooperacion`
+  MODIFY `IdTipoOperacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `tipoprestamo`
+--
+ALTER TABLE `tipoprestamo`
+  MODIFY `IdTipoPrestamo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `tipousuario`
+--
+ALTER TABLE `tipousuario`
+  MODIFY `IdTipoUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `cliente`
---
-ALTER TABLE `cliente`
-  ADD CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`codigoTipoDocumento`) REFERENCES `tipodocumento` (`codigoTipoDocumento`),
-  ADD CONSTRAINT `cliente_ibfk_2` FOREIGN KEY (`codigoEstado`) REFERENCES `estado` (`codigoEstado`),
-  ADD CONSTRAINT `cliente_ibfk_3` FOREIGN KEY (`codigoDistrito`) REFERENCES `distrito` (`codigoDistrito`);
-
---
 -- Filtros para la tabla `cuenta`
 --
 ALTER TABLE `cuenta`
-  ADD CONSTRAINT `cuenta_ibfk_1` FOREIGN KEY (`codigoCliente`) REFERENCES `cliente` (`codigoCliente`),
-  ADD CONSTRAINT `cuenta_ibfk_2` FOREIGN KEY (`codigoTipoCuenta`) REFERENCES `tipocuenta` (`codigoTipoCuenta`),
-  ADD CONSTRAINT `cuenta_ibfk_3` FOREIGN KEY (`codigoEstado`) REFERENCES `estado` (`codigoEstado`);
+  ADD CONSTRAINT `cuenta_ibfk_1` FOREIGN KEY (`IdUsuario`) REFERENCES `usuario` (`IdUsuario`),
+  ADD CONSTRAINT `cuenta_ibfk_2` FOREIGN KEY (`IdTipoCuenta`) REFERENCES `tipocuenta` (`IdTipoCuenta`);
 
 --
--- Filtros para la tabla `deposito`
+-- Filtros para la tabla `datospersonales`
 --
-ALTER TABLE `deposito`
-  ADD CONSTRAINT `deposito_ibfk_1` FOREIGN KEY (`codigoCuenta`) REFERENCES `cuenta` (`codigoCuenta`);
+ALTER TABLE `datospersonales`
+  ADD CONSTRAINT `datospersonales_ibfk_1` FOREIGN KEY (`IdTipoDocumento`) REFERENCES `tipodocumento` (`IdTipoDocumento`),
+  ADD CONSTRAINT `datospersonales_ibfk_2` FOREIGN KEY (`IdDistrito`) REFERENCES `distrito` (`IdDistrito`);
+
+--
+-- Filtros para la tabla `detalleprestamo`
+--
+ALTER TABLE `detalleprestamo`
+  ADD CONSTRAINT `detalleprestamo_ibfk_1` FOREIGN KEY (`IdTipoInformacionBien`) REFERENCES `tipoinformacionbien` (`IdTipoInformacionBien`);
+
+--
+-- Filtros para la tabla `operacionescuentaspropias`
+--
+ALTER TABLE `operacionescuentaspropias`
+  ADD CONSTRAINT `operacionescuentaspropias_ibfk_1` FOREIGN KEY (`IdTipoOperacion`) REFERENCES `tipooperacion` (`IdTipoOperacion`),
+  ADD CONSTRAINT `operacionescuentaspropias_ibfk_2` FOREIGN KEY (`IdCuenta`) REFERENCES `cuenta` (`IdCuenta`);
+
+--
+-- Filtros para la tabla `operacionesotrascuentas`
+--
+ALTER TABLE `operacionesotrascuentas`
+  ADD CONSTRAINT `operacionesotrascuentas_ibfk_1` FOREIGN KEY (`IdTipoOperacion`) REFERENCES `tipooperacion` (`IdTipoOperacion`),
+  ADD CONSTRAINT `operacionesotrascuentas_ibfk_2` FOREIGN KEY (`IdCuentaOrigen`) REFERENCES `cuenta` (`IdCuenta`),
+  ADD CONSTRAINT `operacionesotrascuentas_ibfk_3` FOREIGN KEY (`IdCuentaDestino`) REFERENCES `cuenta` (`IdCuenta`);
 
 --
 -- Filtros para la tabla `prestamo`
 --
 ALTER TABLE `prestamo`
-  ADD CONSTRAINT `codigoCliente` FOREIGN KEY (`codigoCliente`) REFERENCES `cliente` (`codigoCliente`);
+  ADD CONSTRAINT `prestamo_ibfk_1` FOREIGN KEY (`IdTipoPrestamo`) REFERENCES `tipoprestamo` (`IdTipoPrestamo`),
+  ADD CONSTRAINT `prestamo_ibfk_2` FOREIGN KEY (`IdCuenta`) REFERENCES `cuenta` (`IdCuenta`),
+  ADD CONSTRAINT `prestamo_ibfk_3` FOREIGN KEY (`IdTipoComprobante`) REFERENCES `tipocomprobante` (`IdTipoComprobante`),
+  ADD CONSTRAINT `prestamo_ibfk_4` FOREIGN KEY (`IdDetallePrestamo`) REFERENCES `detalleprestamo` (`IdDetallePrestamo`);
 
 --
--- Filtros para la tabla `retiro`
+-- Filtros para la tabla `usuario`
 --
-ALTER TABLE `retiro`
-  ADD CONSTRAINT `retiro_ibfk_1` FOREIGN KEY (`codigoCuenta`) REFERENCES `cuenta` (`codigoCuenta`);
-
---
--- Filtros para la tabla `transferencia`
---
-ALTER TABLE `transferencia`
-  ADD CONSTRAINT `transferencia_ibfk_1` FOREIGN KEY (`codigoCuentaOrigen`) REFERENCES `cuenta` (`codigoCuenta`),
-  ADD CONSTRAINT `transferencia_ibfk_2` FOREIGN KEY (`codigoCuentaDestino`) REFERENCES `cuenta` (`codigoCuenta`);
+ALTER TABLE `usuario`
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`IdTipoUsuario`) REFERENCES `tipousuario` (`IdTipoUsuario`),
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`IdPersona`) REFERENCES `datospersonales` (`IdPersona`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

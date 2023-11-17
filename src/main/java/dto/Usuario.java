@@ -4,7 +4,11 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -21,86 +25,103 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
-    @NamedQuery(name = "Usuario.findByCodiUsua", query = "SELECT u FROM Usuario u WHERE u.codiUsua = :codiUsua"),
-    @NamedQuery(name = "Usuario.findByLogiUsua", query = "SELECT u FROM Usuario u WHERE u.logiUsua = :logiUsua"),
-    @NamedQuery(name = "Usuario.findByPassUsua", query = "SELECT u FROM Usuario u WHERE u.passUsua = :passUsua"),
-    @NamedQuery(name = "Usuario.findByAuthUsua", query = "SELECT u FROM Usuario u WHERE u.authUsua = :authUsua"),
-    @NamedQuery(name = "Usuario.validarUsua", query = "SELECT u FROM Usuario u WHERE u.logiUsua = :logiUsua AND u.passUsua = :passUsua")})
+    @NamedQuery(name = "Usuario.findByIdUsuario", query = "SELECT u FROM Usuario u WHERE u.idUsuario = :idUsuario"),
+    @NamedQuery(name = "Usuario.findByDenoUsuario", query = "SELECT u FROM Usuario u WHERE u.denoUsuario = :denoUsuario"),
+    @NamedQuery(name = "Usuario.findByPassUsuario", query = "SELECT u FROM Usuario u WHERE u.passUsuario = :passUsuario"),
+    @NamedQuery(name = "Usuario.findByAutenticacion", query = "SELECT u FROM Usuario u WHERE u.autenticacion = :autenticacion")})
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "IdUsuario")
+    private Integer idUsuario;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 8)
-    @Column(name = "codiUsua")
-    private String codiUsua;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "logiUsua")
-    private String logiUsua;
+    @Size(min = 1, max = 50)
+    @Column(name = "DenoUsuario")
+    private String denoUsuario;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "passUsua")
-    private String passUsua;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 16)
-    @Column(name = "authUsua")
-    private String authUsua;
+    @Column(name = "PassUsuario")
+    private String passUsuario;
+    @Size(max = 16)
+    @Column(name = "Autenticacion")
+    private String autenticacion;
+    @JoinColumn(name = "IdTipoUsuario", referencedColumnName = "IdTipoUsuario")
+    @ManyToOne(optional = false)
+    private Tipousuario idTipoUsuario;
+    @JoinColumn(name = "IdPersona", referencedColumnName = "IdPersona")
+    @ManyToOne(optional = false)
+    private Datospersonales idPersona;
 
     public Usuario() {
     }
 
-    public Usuario(String codiUsua) {
-        this.codiUsua = codiUsua;
+    public Usuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
-    public Usuario(String codiUsua, String logiUsua, String passUsua, String authUsua) {
-        this.codiUsua = codiUsua;
-        this.logiUsua = logiUsua;
-        this.passUsua = passUsua;
-        this.authUsua = authUsua;
+    public Usuario(Integer idUsuario, String denoUsuario, String passUsuario) {
+        this.idUsuario = idUsuario;
+        this.denoUsuario = denoUsuario;
+        this.passUsuario = passUsuario;
     }
 
-    public String getCodiUsua() {
-        return codiUsua;
+    public Integer getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setCodiUsua(String codiUsua) {
-        this.codiUsua = codiUsua;
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
-    public String getLogiUsua() {
-        return logiUsua;
+    public String getDenoUsuario() {
+        return denoUsuario;
     }
 
-    public void setLogiUsua(String logiUsua) {
-        this.logiUsua = logiUsua;
+    public void setDenoUsuario(String denoUsuario) {
+        this.denoUsuario = denoUsuario;
     }
 
-    public String getPassUsua() {
-        return passUsua;
+    public String getPassUsuario() {
+        return passUsuario;
     }
 
-    public void setPassUsua(String passUsua) {
-        this.passUsua = passUsua;
+    public void setPassUsuario(String passUsuario) {
+        this.passUsuario = passUsuario;
     }
 
-    public String getAuthUsua() {
-        return authUsua;
+    public String getAutenticacion() {
+        return autenticacion;
     }
 
-    public void setAuthUsua(String authUsua) {
-        this.authUsua = authUsua;
+    public void setAutenticacion(String autenticacion) {
+        this.autenticacion = autenticacion;
+    }
+
+    public Tipousuario getIdTipoUsuario() {
+        return idTipoUsuario;
+    }
+
+    public void setIdTipoUsuario(Tipousuario idTipoUsuario) {
+        this.idTipoUsuario = idTipoUsuario;
+    }
+
+    public Datospersonales getIdPersona() {
+        return idPersona;
+    }
+
+    public void setIdPersona(Datospersonales idPersona) {
+        this.idPersona = idPersona;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (codiUsua != null ? codiUsua.hashCode() : 0);
+        hash += (idUsuario != null ? idUsuario.hashCode() : 0);
         return hash;
     }
 
@@ -111,7 +132,7 @@ public class Usuario implements Serializable {
             return false;
         }
         Usuario other = (Usuario) object;
-        if ((this.codiUsua == null && other.codiUsua != null) || (this.codiUsua != null && !this.codiUsua.equals(other.codiUsua))) {
+        if ((this.idUsuario == null && other.idUsuario != null) || (this.idUsuario != null && !this.idUsuario.equals(other.idUsuario))) {
             return false;
         }
         return true;
@@ -119,7 +140,7 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "dto.Usuario[ codiUsua=" + codiUsua + " ]";
+        return "dto.Usuario[ idUsuario=" + idUsuario + " ]";
     }
 
 }

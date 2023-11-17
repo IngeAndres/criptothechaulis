@@ -24,6 +24,8 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(dao.DatospersonalesFacadeREST.class);
+        resources.add(dao.TipousuarioFacadeREST.class);
         resources.add(dao.UsuarioFacadeREST.class);
     }
     
