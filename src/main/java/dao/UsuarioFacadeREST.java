@@ -1,9 +1,9 @@
 package dao;
 
+import service.AbstractFacade;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import service.AbstractFacade;
 import dto.Usuario;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -20,10 +20,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.jboss.aerogear.security.otp.Totp;
 import org.jboss.aerogear.security.otp.api.Base32;
-import security.JwtManager;
+import security.JWT;
 
 /**
  *
@@ -97,24 +99,23 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return em;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Inicio de sesión">
+    // INICIO DE SESIÓN
     @POST
-    @Path("login")
+    @Path("iniciarsesion")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String iniciarSesion(String data) {
+    public String iniciarSesionUsuario(String data) {
         Gson g = new Gson();
         JsonObject response = new JsonObject();
-        JsonObject jo = JsonParser.parseString(data).getAsJsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String logi = jo.get("logi").getAsString();
-        String pass = jo.get("pass").getAsString();
-
-        Usuario u = searchUsuario(logi);
+        String logi = request.get("logi").getAsString();
+        String pass = request.get("pass").getAsString();
+        Usuario u = buscarUsuario(logi);
 
         if (u != null) {
             if (u.getPassUsuario().equals(pass)) {
-                tokenServer = JwtManager.generateToken(logi);
+                tokenServer = JWT.generateToken(logi);
                 response.addProperty("status", 200);
                 response.addProperty("token", tokenServer);
             } else {
@@ -123,32 +124,105 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         } else {
             response.addProperty("status", 404);
         }
+
         return g.toJson(response);
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Código QR">
+    // CÓDIGO QR
     @POST
-    @Path("otpauthurl")
+    @Path("generarurl")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String generarOtpAuthURL(String data) {
+    public String generarURLUsuario(String data) {
         Gson g = new Gson();
         JsonObject response = new JsonObject();
-        JsonObject jo = JsonParser.parseString(data).getAsJsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String logi = jo.get("logi").getAsString();
-        Usuario u = searchUsuario(logi);
+        String logi = request.get("logi").getAsString();
+        Usuario u = buscarUsuario(logi);
 
         if (u != null) {
-            boolean isAuth = generateOtpAuthURL(response, logi, u);
+            boolean isAuth = generarURL(response, logi, u);
             response.addProperty("auth", isAuth);
         }
 
         return g.toJson(response);
     }
 
-    private boolean generateOtpAuthURL(JsonObject response, String logi, Usuario u) {
+    // AUTENTICACIÓN DE DOS FACTORES
+    @POST
+    @Path("autenticacion")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String validarAutenticacion(String data, @Context HttpHeaders headers) {
+        Gson g = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        String logi = request.get("logi").getAsString();
+        String code = request.get("code").getAsString();
+        String tokenClient = extraerTokenHeader(headers);
+        Usuario u = buscarUsuario(logi);
+
+        if (u != null) {
+            em.getTransaction().begin();
+            String logiToken = JWT.verifyToken(tokenClient);
+
+            if (logi.equals(logiToken)) {
+                boolean resultado = autenticarCodigo(u, code);
+                response.addProperty("resultado", resultado);
+                em.getTransaction().commit();
+            } else {
+                response.addProperty("resultado", "error");
+            }
+        }
+
+        return g.toJson(response);
+    }
+
+    // ACTUALIZACIÓN DE CONTRASEÑA
+    @PUT
+    @Path("cambiarcontrasena")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String cambiarContrasenaUsuario(String data, @Context HttpHeaders headers) {
+        Gson g = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        String logi = request.get("logi").getAsString();
+        String pass = request.get("pass").getAsString();
+        String newPass1 = request.get("newpass1").getAsString();
+        String newPass2 = request.get("newpass2").getAsString();
+        String tokenClient = extraerTokenHeader(headers);
+        Usuario u = buscarUsuario(logi);
+
+        if (u != null) {
+            em.getTransaction().begin();
+            String logiToken = JWT.verifyToken(tokenClient);
+
+            if (logi.equals(logiToken)) {
+                String resultado = cambiarContrasena(u, pass, newPass1, newPass2);
+                response.addProperty("resultado", resultado);
+                em.getTransaction().commit();
+            } else {
+                response.addProperty("resultado", "error");
+            }
+        }
+
+        return g.toJson(response);
+    }
+
+    // BÚSQUEDA DE USUARIO
+    private Usuario buscarUsuario(String deno) {
+        TypedQuery<Usuario> tq = em.createNamedQuery("Usuario.findByDenoUsuario", Usuario.class);
+        tq.setParameter("denoUsuario", deno);
+        Usuario u = tq.getSingleResult();
+        return (u != null) ? u : null;
+    }
+
+    // GENERACIÓN DE URL OTP
+    private boolean generarURL(JsonObject response, String logi, Usuario u) {
         String issuer = "TheChaulis";
         String user = logi;
         String auth = u.getAutenticacion();
@@ -159,44 +233,14 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
             response.addProperty("otpauthurl", otpAuthURL);
             return true;
         }
+
         return false;
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Autenticación">
-    @POST
-    @Path("auth")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String validarAutenticacion(String data) {
-        Gson g = new Gson();
-        JsonObject response = new JsonObject();
-        JsonObject jo = JsonParser.parseString(data).getAsJsonObject();
-
-        String logi = jo.get("logi").getAsString();
-        String code = jo.get("code").getAsString();
-        String tokenClient = jo.get("token").getAsString();
-
-        Usuario u = searchUsuario(logi);
-
-        if (u != null) {
-            em.getTransaction().begin();
-            String logiToken = JwtManager.verifyToken(tokenClient);
-
-            if (logi.equals(logiToken)) {
-                boolean resultado = authenticateUser(u, code);
-                response.addProperty("resultado", resultado);
-                em.getTransaction().commit();
-            } else {
-                response.addProperty("resultado", "error");
-            }
-        }
-
-        return g.toJson(response);
-    }
-
-    private boolean authenticateUser(Usuario u, String code) {
+    // VALIDACIÓN DEL CÓDIGO DE 6 DÍGITOS
+    private boolean autenticarCodigo(Usuario u, String code) {
         String auth = u.getAutenticacion();
+
         if (auth == null || auth.isEmpty()) {
             u.setAutenticacion(secret);
         } else {
@@ -206,60 +250,33 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         Totp totp = new Totp(secret);
         return code.equals(totp.now());
     }
-    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Cambio de contraseña">
-    @PUT
-    @Path("cambiarclave")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String cambiarClave(String data) {
-        Gson g = new Gson();
-        JsonObject response = new JsonObject();
-        JsonObject jo = JsonParser.parseString(data).getAsJsonObject();
+    // OBTENCIÓN DEL TOKENCLIENT DE LA AUTHORIZATION BEARER
+    private String extraerTokenHeader(HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 
-        String logi = jo.get("logi").getAsString();
-        String pass = jo.get("pass").getAsString();
-        String newPass = jo.get("newpass").getAsString();
-        String tokenClient = jo.get("token").getAsString();
-        Usuario u = searchUsuario(logi);
-
-        if (u != null) {
-            em.getTransaction().begin();
-            String logiToken = JwtManager.verifyToken(tokenClient);
-
-            if (logi.equals(logiToken)) {
-                String resultado = changePassword(u, pass, newPass);
-                response.addProperty("resultado", resultado);
-                em.getTransaction().commit();
-            } else {
-                response.addProperty("resultado", "error");
-            }
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
         }
 
-        return g.toJson(response);
+        return null;
     }
 
-    private String changePassword(Usuario u, String pass, String newPass) {
+    // VALIDACIÓN DE CONTRASEÑA
+    private String cambiarContrasena(Usuario u, String pass, String newPass1, String newPass2) {
         if (u.getPassUsuario().equals(pass)) {
-            if (u.getPassUsuario().equals(newPass)) {
-                return "equals";
+            if (newPass1.equals(newPass2)) {
+                if (u.getPassUsuario().equals(newPass1)) {
+                    return "equals";
+                } else {
+                    u.setPassUsuario(newPass1);
+                    return "ok";
+                }
             } else {
-                u.setPassUsuario(newPass);
-                return "ok";
+                return "newpassinc";
             }
         } else {
             return "passinc";
         }
     }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="Buscar usuario">
-    private Usuario searchUsuario(String deno) {
-        TypedQuery<Usuario> tq = em.createNamedQuery("Usuario.findByDenoUsuario", Usuario.class);
-        tq.setParameter("denoUsuario", deno);
-        Usuario u = tq.getSingleResult();
-        return u != null ? u : null;
-    }
-    //</editor-fold>
 }

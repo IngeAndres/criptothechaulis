@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import service.AbstractFacade;
@@ -9,6 +5,8 @@ import dto.Datospersonales;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -29,7 +27,8 @@ import javax.ws.rs.core.MediaType;
 public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
-    private EntityManager em;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
+    private EntityManager em = emf.createEntityManager();
 
     public DatospersonalesFacadeREST() {
         super(Datospersonales.class);
@@ -87,5 +86,4 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
 }

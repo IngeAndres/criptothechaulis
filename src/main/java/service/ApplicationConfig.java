@@ -25,6 +25,8 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(dao.DatospersonalesFacadeREST.class);
+        resources.add(dao.DistritoFacadeREST.class);
+        resources.add(dao.TipodocumentoFacadeREST.class);
         resources.add(dao.TipousuarioFacadeREST.class);
         resources.add(dao.UsuarioFacadeREST.class);
     }

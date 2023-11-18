@@ -10,13 +10,13 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
-public class JwtManager {
+public class JWT {
 
     // Autogenera una clave para firmar y verificar tokens
     private static final Key SECRET_KEY = generateSecretKey();
 
-    // Tiempo de expiración del token en milisegundos (en este caso, 15 minutos)
-    private static final int EXPIRATION_TIME = 900000;
+    // Tiempo de expiración del token en milisegundos (en este caso, 10 minutos)
+    private static final int EXPIRATION_TIME = 600000;
 
     /**
      * Genera una clave secreta utilizando un par de claves asimétricas.

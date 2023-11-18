@@ -1,8 +1,8 @@
 package dto;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -42,6 +44,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Datospersonales.findByCeluPersona", query = "SELECT d FROM Datospersonales d WHERE d.celuPersona = :celuPersona"),
     @NamedQuery(name = "Datospersonales.findByEmailPersona", query = "SELECT d FROM Datospersonales d WHERE d.emailPersona = :emailPersona")})
 public class Datospersonales implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPersona")
+    private Collection<Usuario> usuarioCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -98,8 +103,12 @@ public class Datospersonales implements Serializable {
     @Size(min = 1, max = 250)
     @Column(name = "EmailPersona")
     private String emailPersona;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPersona")
-    private List<Usuario> usuarioList;
+    @JoinColumn(name = "IdTipoDocumento", referencedColumnName = "IdTipoDocumento")
+    @ManyToOne(optional = false)
+    private Tipodocumento idTipoDocumento;
+    @JoinColumn(name = "IdDistrito", referencedColumnName = "IdDistrito")
+    @ManyToOne(optional = false)
+    private Distrito idDistrito;
 
     public Datospersonales() {
     }
@@ -210,13 +219,20 @@ public class Datospersonales implements Serializable {
         this.emailPersona = emailPersona;
     }
 
-    @XmlTransient
-    public List<Usuario> getUsuarioList() {
-        return usuarioList;
+    public Tipodocumento getIdTipoDocumento() {
+        return idTipoDocumento;
     }
 
-    public void setUsuarioList(List<Usuario> usuarioList) {
-        this.usuarioList = usuarioList;
+    public void setIdTipoDocumento(Tipodocumento idTipoDocumento) {
+        this.idTipoDocumento = idTipoDocumento;
+    }
+
+    public Distrito getIdDistrito() {
+        return idDistrito;
+    }
+
+    public void setIdDistrito(Distrito idDistrito) {
+        this.idDistrito = idDistrito;
     }
 
     @Override
@@ -242,6 +258,15 @@ public class Datospersonales implements Serializable {
     @Override
     public String toString() {
         return "dto.Datospersonales[ idPersona=" + idPersona + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Usuario> getUsuarioCollection() {
+        return usuarioCollection;
+    }
+
+    public void setUsuarioCollection(Collection<Usuario> usuarioCollection) {
+        this.usuarioCollection = usuarioCollection;
     }
     
 }

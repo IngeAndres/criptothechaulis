@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2023 a las 19:11:46
+-- Tiempo de generación: 19-11-2023 a las 00:00:18
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -359,21 +359,11 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`IdUsuario`, `IdTipoUsuario`, `IdPersona`, `DenoUsuario`, `PassUsuario`, `Autenticacion`) VALUES
-(1, 1, 11, 'andres', '0a92efb1b91ac02c858ab205fbb6baf44d67e8d1e625600a11020cfae50065da', NULL),
-(2, 1, 12, 'anthony', '502913bfdd49eab564282dff101e6d167321237eeec66eedb2a438ed80fdeaa0', NULL),
-(3, 1, 13, 'jeanpierre', 'fbcc8fa66b9a007dc3649ee989950d38f12ed91b9f18a3d215b04ff77546dca0', NULL),
-(4, 1, 14, 'carlos', '7b85175b455060e3237e925f023053ca9515e8682a83c8b09911c724a1f8b75f', NULL),
-(5, 1, 15, 'denver', '4c6eb87b502e3e019acbd4b1e579bd1566104abc0914f5186df63e4833c993c2', NULL),
-(6, 3, 1, 'juan', 'ed08c290d7e22f7bb324b15cbadce35b0b348564fd2d5f95752388d86d71bcca', NULL),
-(7, 3, 2, 'maria', '94aec9fbed989ece189a7e172c9cf41669050495152bc4c1dbf2a38d7fd85627', NULL),
-(8, 3, 3, 'luis', 'c5ff177a86e82441f93e3772da700d5f6838157fa1bfdc0bb689d7f7e55e7aba', NULL),
-(9, 3, 4, 'ana', '24d4b96f58da6d4a8512313bbd02a28ebf0ca95dec6e4c86ef78ce7f01e788ac', NULL),
-(10, 3, 5, 'carlos', '7b85175b455060e3237e925f023053ca9515e8682a83c8b09911c724a1f8b75f', NULL),
-(11, 3, 6, 'laura', '5d702eb07928ed7b84626b777c86c39bf4cb403d4024f031d5f97a4b0664421f', NULL),
-(12, 3, 7, 'pedro', 'ee5cd7d5d96c8874117891b2c92a036f96918e66c102bc698ae77542c186f981', NULL),
-(13, 3, 8, 'elena', '0ce93c9606f0685bf60e051265891d256381f639d05c0aec67c84eec49d33cc1', NULL),
-(14, 3, 9, 'javier', '384dac3368de6f658d7bc66e8fd4c8206b91c17a9084498948c7dd6e44d4a055', NULL),
-(15, 3, 10, 'silvia', '2d51a3b3ca1cdf790485938566c720527b2ebbe5a1f0326316ce63aafbc385d4', NULL);
+(1, 1, 11, 'Inge', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'CYKYFZUE3FI4M42K'),
+(2, 1, 12, 'ZeNktr4k', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', NULL),
+(3, 1, 13, 'jconejo', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', NULL),
+(4, 1, 14, 'Caldito', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', NULL),
+(5, 1, 15, 'Zamber', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -577,7 +567,7 @@ ALTER TABLE `tipousuario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
