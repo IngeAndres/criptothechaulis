@@ -1,13 +1,19 @@
 package dao;
 
+import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Datospersonales;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -85,5 +91,52 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    @GET
+    @Path("listardatos")
+    public String listarDatosPersonales() {
+        Gson g = new Gson();
+        TypedQuery<Object[]> query = em.createNamedQuery("Datospersonales.listar", Object[].class);
+
+        List<Object[]> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+
+        return g.toJson(listaMapas);
+
+    }
+
+    private List<Map<String, Object>> listarMapaDatos(List<Object[]> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Object[] result : resultList) {
+            Integer idPersona = (Integer) result[0];
+            String denoTipoDocumento = (String) result[1];
+            String docuPersona = (String) result[2];
+            String apPaPersona = (String) result[3];
+            String apMaPersona = (String) result[4];
+            String nombPersona = (String) result[5];
+            String celuPersona = (String) result[6];
+            String emailPersona = (String) result[7];
+
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("idPersona", idPersona);
+            mapa.put("denoTipoDocumento", denoTipoDocumento);
+            mapa.put("docuPersona", docuPersona);
+            mapa.put("apPaPersona", apPaPersona);
+            mapa.put("apMaPersona", apMaPersona);
+            mapa.put("nombPersona", nombPersona);
+            mapa.put("celuPersona", celuPersona);
+            mapa.put("emailPersona", emailPersona);
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
+    }
+
+    public static void main(String[] args) {
+        DatospersonalesFacadeREST a = new DatospersonalesFacadeREST();
+        String res = a.listarDatosPersonales();
+
+        System.out.println(res);
     }
 }
