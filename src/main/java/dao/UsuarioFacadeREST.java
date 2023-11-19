@@ -99,7 +99,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return em;
     }
 
-    // INICIO DE SESIÓN
+    // INICIO DE SESIÓN DE USUARIO
     @POST
     @Path("iniciarsesion")
     @Consumes(MediaType.APPLICATION_JSON)
