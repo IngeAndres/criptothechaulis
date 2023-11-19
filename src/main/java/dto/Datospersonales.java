@@ -1,8 +1,8 @@
 package dto;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,11 +42,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Datospersonales.findByFechPersona", query = "SELECT d FROM Datospersonales d WHERE d.fechPersona = :fechPersona"),
     @NamedQuery(name = "Datospersonales.findByDirePersona", query = "SELECT d FROM Datospersonales d WHERE d.direPersona = :direPersona"),
     @NamedQuery(name = "Datospersonales.findByCeluPersona", query = "SELECT d FROM Datospersonales d WHERE d.celuPersona = :celuPersona"),
-    @NamedQuery(name = "Datospersonales.findByEmailPersona", query = "SELECT d FROM Datospersonales d WHERE d.emailPersona = :emailPersona")})
+    @NamedQuery(name = "Datospersonales.findByEmailPersona", query = "SELECT d FROM Datospersonales d WHERE d.emailPersona = :emailPersona"),
+    @NamedQuery(name = "Datospersonales.listar",
+            query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona, d.celuPersona, d.emailPersona "
+            + "FROM Datospersonales d "
+            + "JOIN d.idTipoDocumento t")})
 public class Datospersonales implements Serializable {
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPersona")
-    private Collection<Usuario> usuarioCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -109,6 +110,8 @@ public class Datospersonales implements Serializable {
     @JoinColumn(name = "IdDistrito", referencedColumnName = "IdDistrito")
     @ManyToOne(optional = false)
     private Distrito idDistrito;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idPersona")
+    private List<Usuario> usuarioList;
 
     public Datospersonales() {
     }
@@ -235,6 +238,15 @@ public class Datospersonales implements Serializable {
         this.idDistrito = idDistrito;
     }
 
+    @XmlTransient
+    public List<Usuario> getUsuarioList() {
+        return usuarioList;
+    }
+
+    public void setUsuarioList(List<Usuario> usuarioList) {
+        this.usuarioList = usuarioList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -260,13 +272,5 @@ public class Datospersonales implements Serializable {
         return "dto.Datospersonales[ idPersona=" + idPersona + " ]";
     }
 
-    @XmlTransient
-    public Collection<Usuario> getUsuarioCollection() {
-        return usuarioCollection;
-    }
-
-    public void setUsuarioCollection(Collection<Usuario> usuarioCollection) {
-        this.usuarioCollection = usuarioCollection;
-    }
-    
 }
+

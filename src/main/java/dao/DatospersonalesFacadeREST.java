@@ -1,13 +1,18 @@
 package dao;
 
+import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Datospersonales;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -85,5 +90,36 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    @GET
+    @Path("listardatos")
+    public String listarDatosPersonales() {
+        TypedQuery<Object[]> query = em.createNamedQuery("Datospersonales.listar", Object[].class);
+
+        List<Object[]> DatosPersonales = query.getResultList();
+        List<Map<String, Object>> DatosPersonalesMapList = new ArrayList<>();
+
+        for (Object[] DatosPersonalesData : DatosPersonales) {
+            Map<String, Object> DatosPersonalesMap = new HashMap<>();
+            DatosPersonalesMap.put("ID", DatosPersonalesData[0]);
+            DatosPersonalesMap.put("TIPO_DOCUMENTO", DatosPersonalesData[1]);
+            DatosPersonalesMap.put("NUMERO_DOCUMENTO", DatosPersonalesData[2]);
+            DatosPersonalesMap.put("APELLIDO_PATERNO", DatosPersonalesData[3]);
+            DatosPersonalesMap.put("APELLIDO_MATERNO", DatosPersonalesData[4]);
+            DatosPersonalesMap.put("NOMBRE", DatosPersonalesData[5]);
+            DatosPersonalesMap.put("CELULAR", DatosPersonalesData[6]);
+            DatosPersonalesMap.put("CORREO_ELECTRONICO", DatosPersonalesData[7]);
+            DatosPersonalesMapList.add(DatosPersonalesMap);
+        }
+
+        Gson gson = new Gson();
+        return gson.toJson(DatosPersonalesMapList);
+    }
+
+    public static void main(String[] args) {
+        DatospersonalesFacadeREST Datos = new DatospersonalesFacadeREST();
+        String lista = Datos.listarDatosPersonales();
+        System.out.println(lista);
     }
 }
