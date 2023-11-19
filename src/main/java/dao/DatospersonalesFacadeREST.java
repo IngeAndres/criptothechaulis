@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Datospersonales;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,34 +108,18 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
     private List<Map<String, Object>> listarMapaDatos(List<Object[]> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
         for (Object[] result : resultList) {
-            Integer idPersona = (Integer) result[0];
-            String denoTipoDocumento = (String) result[1];
-            String docuPersona = (String) result[2];
-            String apPaPersona = (String) result[3];
-            String apMaPersona = (String) result[4];
-            String nombPersona = (String) result[5];
-            String celuPersona = (String) result[6];
-            String emailPersona = (String) result[7];
-
             Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idPersona", idPersona);
-            mapa.put("denoTipoDocumento", denoTipoDocumento);
-            mapa.put("docuPersona", docuPersona);
-            mapa.put("apPaPersona", apPaPersona);
-            mapa.put("apMaPersona", apMaPersona);
-            mapa.put("nombPersona", nombPersona);
-            mapa.put("celuPersona", celuPersona);
-            mapa.put("emailPersona", emailPersona);
+            mapa.put("idPersona", result[0]);
+            mapa.put("denoTipoDocumento", result[1]);
+            mapa.put("docuPersona", result[2]);
+            mapa.put("apPaPersona", result[3]);
+            mapa.put("apMaPersona", result[4]);
+            mapa.put("nombPersona", result[5]);
+            mapa.put("celuPersona", result[6]);
+            mapa.put("emailPersona", result[7]);
 
             listaMapas.add(mapa);
         }
         return listaMapas;
-    }
-
-    public static void main(String[] args) {
-        DatospersonalesFacadeREST a = new DatospersonalesFacadeREST();
-        String res = a.listarDatosPersonales();
-
-        System.out.println(res);
     }
 }
