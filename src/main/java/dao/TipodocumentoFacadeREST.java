@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -85,5 +86,21 @@ public class TipodocumentoFacadeREST extends AbstractFacade<Tipodocumento> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+    
+    public int obtenerIdTipDoc(String DenoDocumento) {
+        em = getEntityManager();
+        try {
+            Query query = em.createNamedQuery("Tipodocumento.findByDenoTipoDocumento");
+            query.setParameter("denoTipoDocumento", DenoDocumento);
+            List<Tipodocumento> results = query.getResultList();
+            if (!results.isEmpty()) {
+                return results.get(0).getIdTipoDocumento();
+            } else {
+                return 0;
+            }
+        } finally {
+            em.close();
+        }
     }
 }

@@ -1,9 +1,17 @@
 package dao;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import service.AbstractFacade;
 import dto.Datospersonales;
+import dto.Distrito;
+import dto.Tipodocumento;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,4 +130,75 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         }
         return listaMapas;
     }
+    
+    public boolean insertarDatosPersonales(Datospersonales datosPersonales) {
+        em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(datosPersonales);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
+    
+    @POST
+    @Path("insertarDatos")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String insertDatos(String data) throws ParseException{
+        Gson g = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        String tipodocumento = request.get("documento").getAsString();
+        String docuPersona = request.get("numerodoc").getAsString();
+        String RUC = request.get("ruc").getAsString();
+        String NombPersona = request.get("nombre").getAsString();
+        String ApPaPersona = request.get("paterno").getAsString();
+        String ApMaPersona = request.get("materno").getAsString();
+        String GenePersona = request.get("genero").getAsString();
+        String Fecha = request.get("fecha").getAsString();
+        String DirePersona = request.get("direccion").getAsString();
+        String CeluPersona = request.get("celular").getAsString();
+        String EmailPersona = request.get("email").getAsString();
+        String Distrito = request.get("distrito").getAsString();
+        
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        Date FechPersona = formatoFecha.parse(Fecha);
+        
+        TipodocumentoFacadeREST tipdoc = new TipodocumentoFacadeREST();
+        int IdTipoDocumento = tipdoc.obtenerIdTipDoc(tipodocumento);
+        
+        DistritoFacadeREST distric = new DistritoFacadeREST();
+        int IdDistrito = distric.obtenerIdDistrito(Distrito);
+        
+        Datospersonales datosPersonales = new Datospersonales();
+        datosPersonales.setDocuPersona(docuPersona);
+    datosPersonales.setRuc(RUC);
+    datosPersonales.setNombPersona(NombPersona);
+    datosPersonales.setApPaPersona(ApPaPersona);
+    datosPersonales.setApMaPersona(ApMaPersona);
+    datosPersonales.setGenePersona(GenePersona.charAt(0));
+    datosPersonales.setFechPersona(FechPersona);
+    datosPersonales.setDirePersona(DirePersona);
+    datosPersonales.setCeluPersona(CeluPersona);
+    datosPersonales.setEmailPersona(EmailPersona);
+    
+    datosPersonales.setIdTipoDocumento(new Tipodocumento(IdTipoDocumento));
+    datosPersonales.setIdDistrito(new Distrito(IdDistrito));
+    
+    boolean insertar = insertarDatosPersonales(datosPersonales);
+
+    if (insertar) {
+        response.addProperty("success", Boolean.TRUE);
+    } else {
+        response.addProperty("success", Boolean.FALSE);
+    }
+
+    return g.toJson(response);
+    }
+    
 }

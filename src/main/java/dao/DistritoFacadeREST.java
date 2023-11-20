@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -85,5 +86,21 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+    
+    public int obtenerIdDistrito(String DenoDistrito) {
+        em = getEntityManager();
+        try {
+            Query query = em.createNamedQuery("Distrito.findByDenoDistrito");
+            query.setParameter("denoDistrito", DenoDistrito);
+            List<Distrito> results = query.getResultList();
+            if (!results.isEmpty()) {
+                return results.get(0).getIdDistrito();
+            } else {
+                return 0;
+            }
+        } finally {
+            em.close();
+        }
     }
 }
