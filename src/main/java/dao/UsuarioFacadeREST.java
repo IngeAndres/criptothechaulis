@@ -9,6 +9,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -217,8 +218,12 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     private Usuario buscarUsuario(String deno) {
         TypedQuery<Usuario> tq = em.createNamedQuery("Usuario.findByDenoUsuario", Usuario.class);
         tq.setParameter("denoUsuario", deno);
-        Usuario u = tq.getSingleResult();
-        return (u != null) ? u : null;
+        try {
+            Usuario u = tq.getSingleResult();
+            return u;
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     // GENERACIÓN DE URL OTP
