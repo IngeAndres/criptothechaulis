@@ -9,7 +9,6 @@ import dto.Distrito;
 import dto.Tipodocumento;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,7 +109,6 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
 
         return g.toJson(listaMapas);
-
     }
 
     private List<Map<String, Object>> listarMapaDatos(List<Object[]> resultList) {
@@ -130,7 +128,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         }
         return listaMapas;
     }
-    
+
     public boolean insertarDatosPersonales(Datospersonales datosPersonales) {
         em = getEntityManager();
         try {
@@ -142,13 +140,12 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
             return false;
         }
     }
-    
-    
+
     @POST
     @Path("insertarDatos")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String insertDatos(String data) throws ParseException{
+    public String insertDatos(String data) throws ParseException {
         Gson g = new Gson();
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
@@ -165,40 +162,34 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         String CeluPersona = request.get("celular").getAsString();
         String EmailPersona = request.get("email").getAsString();
         String Distrito = request.get("distrito").getAsString();
-        
+
         SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
         Date FechPersona = formatoFecha.parse(Fecha);
-        
+
         TipodocumentoFacadeREST tipdoc = new TipodocumentoFacadeREST();
-        int IdTipoDocumento = tipdoc.obtenerIdTipDoc(tipodocumento);
-        
+        int IdTipoDocumento = tipdoc.obtenerIdTipoDocumento(tipodocumento);
+
         DistritoFacadeREST distric = new DistritoFacadeREST();
         int IdDistrito = distric.obtenerIdDistrito(Distrito);
-        
+
         Datospersonales datosPersonales = new Datospersonales();
         datosPersonales.setDocuPersona(docuPersona);
-    datosPersonales.setRuc(RUC);
-    datosPersonales.setNombPersona(NombPersona);
-    datosPersonales.setApPaPersona(ApPaPersona);
-    datosPersonales.setApMaPersona(ApMaPersona);
-    datosPersonales.setGenePersona(GenePersona.charAt(0));
-    datosPersonales.setFechPersona(FechPersona);
-    datosPersonales.setDirePersona(DirePersona);
-    datosPersonales.setCeluPersona(CeluPersona);
-    datosPersonales.setEmailPersona(EmailPersona);
-    
-    datosPersonales.setIdTipoDocumento(new Tipodocumento(IdTipoDocumento));
-    datosPersonales.setIdDistrito(new Distrito(IdDistrito));
-    
-    boolean insertar = insertarDatosPersonales(datosPersonales);
+        datosPersonales.setRuc(RUC);
+        datosPersonales.setNombPersona(NombPersona);
+        datosPersonales.setApPaPersona(ApPaPersona);
+        datosPersonales.setApMaPersona(ApMaPersona);
+        datosPersonales.setGenePersona(GenePersona.charAt(0));
+        datosPersonales.setFechPersona(FechPersona);
+        datosPersonales.setDirePersona(DirePersona);
+        datosPersonales.setCeluPersona(CeluPersona);
+        datosPersonales.setEmailPersona(EmailPersona);
 
-    if (insertar) {
-        response.addProperty("success", Boolean.TRUE);
-    } else {
-        response.addProperty("success", Boolean.FALSE);
-    }
+        datosPersonales.setIdTipoDocumento(new Tipodocumento(IdTipoDocumento));
+        datosPersonales.setIdDistrito(new Distrito(IdDistrito));
 
-    return g.toJson(response);
+        boolean insertar = insertarDatosPersonales(datosPersonales);
+        response.addProperty("success", insertar);
+
+        return g.toJson(response);
     }
-    
 }

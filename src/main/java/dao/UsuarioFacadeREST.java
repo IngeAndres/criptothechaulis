@@ -1,11 +1,15 @@
 package dao;
 
-import service.AbstractFacade;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dto.Tipousuario;
+import service.AbstractFacade;
 import dto.Usuario;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -278,5 +282,40 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         } else {
             return "passinc";
         }
+    }
+
+    // LISTADO DE CLIENTES
+    @GET
+    @Path("listarclientes")
+    public String listarUsuariosPorTipoUsuario() {
+        Gson g = new Gson();
+        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.listarUsuarios", Object[].class);
+
+        Tipousuario tipoUsuario = em.find(Tipousuario.class, 3);
+        tq.setParameter("idTipoUsuario", tipoUsuario);
+
+        List<Object[]> resultList = tq.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+
+        return g.toJson(listaMapas);
+    }
+
+    //MAPEADO DE LA LISTA DE CLIENTES
+    private List<Map<String, Object>> listarMapaDatos(List<Object[]> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Object[] result : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("idPersona", result[0]);
+            mapa.put("denoTipoDocumento", result[1]);
+            mapa.put("docuPersona", result[2]);
+            mapa.put("apPaPersona", result[3]);
+            mapa.put("apMaPersona", result[4]);
+            mapa.put("nombPersona", result[5]);
+            mapa.put("celuPersona", result[6]);
+            mapa.put("emailPersona", result[7]);
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
     }
 }

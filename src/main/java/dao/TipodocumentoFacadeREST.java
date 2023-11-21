@@ -1,14 +1,19 @@
 package dao;
 
+import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Tipodocumento;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -87,12 +92,11 @@ public class TipodocumentoFacadeREST extends AbstractFacade<Tipodocumento> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
-    public int obtenerIdTipDoc(String DenoDocumento) {
-        em = getEntityManager();
+
+    public int obtenerIdTipoDocumento(String denoTipoDocumento) {
         try {
             Query query = em.createNamedQuery("Tipodocumento.findByDenoTipoDocumento");
-            query.setParameter("denoTipoDocumento", DenoDocumento);
+            query.setParameter("denoTipoDocumento", denoTipoDocumento);
             List<Tipodocumento> results = query.getResultList();
             if (!results.isEmpty()) {
                 return results.get(0).getIdTipoDocumento();
@@ -102,5 +106,29 @@ public class TipodocumentoFacadeREST extends AbstractFacade<Tipodocumento> {
         } finally {
             em.close();
         }
+    }
+
+    @GET
+    @Path("listartipodocumento")
+    public String listarTipoDocumento() {
+        Gson g = new Gson();
+        TypedQuery<Tipodocumento> query = em.createNamedQuery("Tipodocumento.findAll", Tipodocumento.class);
+
+        List<Tipodocumento> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+
+        return g.toJson(listaMapas);
+    }
+
+    private List<Map<String, Object>> listarMapaDatos(List<Tipodocumento> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Tipodocumento tipoDocumento : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("IdTipoDocumento", tipoDocumento.getIdTipoDocumento());
+            mapa.put("DenoTipoDocumento", tipoDocumento.getDenoTipoDocumento());
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
     }
 }

@@ -1,14 +1,19 @@
 package dao;
 
+import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Distrito;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -87,12 +92,11 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
-    public int obtenerIdDistrito(String DenoDistrito) {
-        em = getEntityManager();
+
+    public int obtenerIdDistrito(String denoDistrito) {
         try {
             Query query = em.createNamedQuery("Distrito.findByDenoDistrito");
-            query.setParameter("denoDistrito", DenoDistrito);
+            query.setParameter("denoDistrito", denoDistrito);
             List<Distrito> results = query.getResultList();
             if (!results.isEmpty()) {
                 return results.get(0).getIdDistrito();
@@ -102,5 +106,37 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
         } finally {
             em.close();
         }
+    }
+
+    @GET
+    @Path("listardistrito")
+
+    public String listarDistritos() {
+        Gson g = new Gson();
+        TypedQuery<Distrito> query = em.createNamedQuery("Distrito.findAll", Distrito.class);
+
+        List<Distrito> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+
+        return g.toJson(listaMapas);
+    }
+
+    private List<Map<String, Object>> listarMapaDatos(List<Distrito> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Distrito distrito : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("IdDistrito", distrito.getIdDistrito());
+            mapa.put("DenoDistrito", distrito.getDenoDistrito());
+            mapa.put("ProvDistrito", distrito.getProvDistrito());
+            mapa.put("DepaDistrito", distrito.getDepaDistrito());
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
+    }
+    
+    public static void main(String[] args) {
+        DistritoFacadeREST dfrest = new DistritoFacadeREST();
+        System.out.println(dfrest.listarDistritos());
     }
 }

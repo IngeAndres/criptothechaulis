@@ -1,7 +1,7 @@
 package dao;
 
 import service.AbstractFacade;
-import dto.Tipousuario;
+import dto.Cuenta;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -23,28 +23,28 @@ import javax.ws.rs.core.MediaType;
  * @author Ing. Andres Gomez
  */
 @Stateless
-@Path("dto.tipousuario")
-public class TipousuarioFacadeREST extends AbstractFacade<Tipousuario> {
+@Path("dto.cuenta")
+public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
     private EntityManager em = emf.createEntityManager();
 
-    public TipousuarioFacadeREST() {
-        super(Tipousuario.class);
+    public CuentaFacadeREST() {
+        super(Cuenta.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Tipousuario entity) {
+    public void create(Cuenta entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Tipousuario entity) {
+    public void edit(@PathParam("id") Integer id, Cuenta entity) {
         super.edit(entity);
     }
 
@@ -57,21 +57,21 @@ public class TipousuarioFacadeREST extends AbstractFacade<Tipousuario> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Tipousuario find(@PathParam("id") Integer id) {
+    public Cuenta find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Tipousuario> findAll() {
+    public List<Cuenta> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Tipousuario> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<Cuenta> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
 

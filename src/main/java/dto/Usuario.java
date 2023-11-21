@@ -1,7 +1,9 @@
 package dto;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,10 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -28,7 +32,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Usuario.findByIdUsuario", query = "SELECT u FROM Usuario u WHERE u.idUsuario = :idUsuario"),
     @NamedQuery(name = "Usuario.findByDenoUsuario", query = "SELECT u FROM Usuario u WHERE u.denoUsuario = :denoUsuario"),
     @NamedQuery(name = "Usuario.findByPassUsuario", query = "SELECT u FROM Usuario u WHERE u.passUsuario = :passUsuario"),
-    @NamedQuery(name = "Usuario.findByAutenticacion", query = "SELECT u FROM Usuario u WHERE u.autenticacion = :autenticacion")})
+    @NamedQuery(name = "Usuario.findByAutenticacion", query = "SELECT u FROM Usuario u WHERE u.autenticacion = :autenticacion"),
+    @NamedQuery(name = "Usuario.listarUsuarios",
+            query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona, d.celuPersona, d.emailPersona "
+            + "FROM Usuario u "
+            + "JOIN u.idPersona d "
+            + "JOIN d.idTipoDocumento t "
+            + "WHERE u.idTipoUsuario = :idTipoUsuario")})
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -50,6 +60,8 @@ public class Usuario implements Serializable {
     @Size(max = 16)
     @Column(name = "Autenticacion")
     private String autenticacion;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idUsuario")
+    private List<Cuenta> cuentaList;
     @JoinColumn(name = "IdTipoUsuario", referencedColumnName = "IdTipoUsuario")
     @ManyToOne(optional = false)
     private Tipousuario idTipoUsuario;
@@ -102,6 +114,15 @@ public class Usuario implements Serializable {
         this.autenticacion = autenticacion;
     }
 
+    @XmlTransient
+    public List<Cuenta> getCuentaList() {
+        return cuentaList;
+    }
+
+    public void setCuentaList(List<Cuenta> cuentaList) {
+        this.cuentaList = cuentaList;
+    }
+
     public Tipousuario getIdTipoUsuario() {
         return idTipoUsuario;
     }
@@ -142,5 +163,5 @@ public class Usuario implements Serializable {
     public String toString() {
         return "dto.Usuario[ idUsuario=" + idUsuario + " ]";
     }
-    
+
 }

@@ -121,5 +121,5 @@ public class Tipousuario implements Serializable {
     public String toString() {
         return "dto.Tipousuario[ idTipoUsuario=" + idTipoUsuario + " ]";
     }
-    
+
 }
