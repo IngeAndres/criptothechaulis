@@ -134,9 +134,4 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
         }
         return listaMapas;
     }
-    
-    public static void main(String[] args) {
-        DistritoFacadeREST dfrest = new DistritoFacadeREST();
-        System.out.println(dfrest.listarDistritos());
-    }
 }

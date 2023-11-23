@@ -123,10 +123,4 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         }
         return listaMapas;
     }
-    
-    public static void main(String[] args) {
-        CuentaFacadeREST cuenta = new CuentaFacadeREST();
-        String lista = cuenta.listarCuentasEmp();
-        System.out.println(lista);
-    }
 }
