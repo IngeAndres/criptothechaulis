@@ -114,11 +114,10 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
             mapa.put("nombPersona", result[2]);
             mapa.put("denoTipoCuenta", result[3]);
             mapa.put("numbCuenta", result[4]);
-            mapa.put("cci", result[5]);
-            mapa.put("saldoDisponible", result[6]);
-            mapa.put("saldoContable", result[7]);
-            mapa.put("estadoCuenta", result[8]);
-            mapa.put("fechaApertura", result[9]);
+            mapa.put("saldoDisponible", result[5]);
+            mapa.put("saldoContable", result[6]);
+            mapa.put("estadoCuenta", result[7]);
+            mapa.put("fechaApertura", result[8]);
 
             listaMapas.add(mapa);
         }
