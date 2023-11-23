@@ -1,13 +1,18 @@
 package dao;
 
+import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Cuenta;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -87,4 +92,38 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         return em;
     }
     
+    
+    @GET
+    @Path("listardatos")
+    public String listarCuentasEmp() {
+        Gson g = new Gson();
+        TypedQuery<Object[]> query = em.createNamedQuery("Cuenta.listarcuentaEmp", Object[].class);
+
+        List<Object[]> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaCuentaEmp(resultList);
+
+        return g.toJson(listaMapas);
+    }
+    
+    private List<Map<String, Object>> listarMapaCuentaEmp(List<Object[]> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Object[] result : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("numbCuenta", result[0]);
+            mapa.put("cci", result[1]);
+            mapa.put("saldoDisponible", result[2]);
+            mapa.put("saldoContable", result[3]);
+            mapa.put("estadoCuenta", result[4]);
+            mapa.put("fechaApertura", result[5]);
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
+    }
+    
+    public static void main(String[] args) {
+        CuentaFacadeREST cuenta = new CuentaFacadeREST();
+        String lista = cuenta.listarCuentasEmp();
+        System.out.println(lista);
+    }
 }

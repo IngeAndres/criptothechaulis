@@ -39,7 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Cuenta.findBySaldoContable", query = "SELECT c FROM Cuenta c WHERE c.saldoContable = :saldoContable"),
     @NamedQuery(name = "Cuenta.findByEstadoCuenta", query = "SELECT c FROM Cuenta c WHERE c.estadoCuenta = :estadoCuenta"),
     @NamedQuery(name = "Cuenta.findByFechaApertura", query = "SELECT c FROM Cuenta c WHERE c.fechaApertura = :fechaApertura"),
-    @NamedQuery(name = "Cuenta.findByFechaCierre", query = "SELECT c FROM Cuenta c WHERE c.fechaCierre = :fechaCierre")})
+    @NamedQuery(name = "Cuenta.findByFechaCierre", query = "SELECT c FROM Cuenta c WHERE c.fechaCierre = :fechaCierre"),
+    @NamedQuery(name = "Cuenta.listarcuentaEmp", query = "SELECT c.numbCuenta, c.cci, c.saldoDisponible, c.saldoContable, c.estadoCuenta, c.fechaApertura "
+            + "FROM Cuenta c ")})
 public class Cuenta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -254,5 +256,5 @@ public class Cuenta implements Serializable {
     public String toString() {
         return "dto.Cuenta[ idCuenta=" + idCuenta + " ]";
     }
-    
+
 }
