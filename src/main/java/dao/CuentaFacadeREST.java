@@ -94,7 +94,7 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
     
     
     @GET
-    @Path("listardatos")
+    @Path("listarcuenta")
     public String listarCuentasEmp() {
         Gson g = new Gson();
         TypedQuery<Object[]> query = em.createNamedQuery("Cuenta.listarcuentaEmp", Object[].class);
@@ -109,12 +109,16 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
         for (Object[] result : resultList) {
             Map<String, Object> mapa = new HashMap<>();
-            mapa.put("numbCuenta", result[0]);
-            mapa.put("cci", result[1]);
-            mapa.put("saldoDisponible", result[2]);
-            mapa.put("saldoContable", result[3]);
-            mapa.put("estadoCuenta", result[4]);
-            mapa.put("fechaApertura", result[5]);
+            mapa.put("apPaPersona", result[0]);
+            mapa.put("apMaPersona", result[1]);
+            mapa.put("nombPersona", result[2]);
+            mapa.put("denoTipoCuenta", result[3]);
+            mapa.put("numbCuenta", result[4]);
+            mapa.put("cci", result[5]);
+            mapa.put("saldoDisponible", result[6]);
+            mapa.put("saldoContable", result[7]);
+            mapa.put("estadoCuenta", result[8]);
+            mapa.put("fechaApertura", result[9]);
 
             listaMapas.add(mapa);
         }
