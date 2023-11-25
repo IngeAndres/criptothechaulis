@@ -87,4 +87,13 @@ public class TipocomprobanteFacadeREST extends AbstractFacade<Tipocomprobante> {
         return em;
     }
     
+    public Tipocomprobante findTipocomprobante(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Tipocomprobante.class, id);
+        } finally {
+            em.close();
+        }
+    }
+    
 }

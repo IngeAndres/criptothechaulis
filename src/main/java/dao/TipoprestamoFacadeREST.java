@@ -87,4 +87,12 @@ public class TipoprestamoFacadeREST extends AbstractFacade<Tipoprestamo> {
         return em;
     }
     
+    public Tipoprestamo findTipoprestamo(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Tipoprestamo.class, id);
+        } finally {
+            em.close();
+        }
+    }
 }

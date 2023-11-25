@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -122,5 +123,24 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
             listaMapas.add(mapa);
         }
         return listaMapas;
+    }
+    
+     public Cuenta obtenerPorNumCuenta(String NumberCuenta) {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createNamedQuery("Cuenta.findByNumbCuenta");
+            query.setParameter("numbCuenta", NumberCuenta);
+
+            List<Cuenta> results = query.getResultList();
+
+            if (!results.isEmpty()) {
+                return results.get(0);
+            } else {
+                return null;
+            }
+        } finally {
+            em.close();
+        }
+
     }
 }

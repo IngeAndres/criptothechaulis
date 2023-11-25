@@ -2,6 +2,7 @@ package dao;
 
 import service.AbstractFacade;
 import dto.Detalleprestamo;
+import dto.Prestamo;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -87,4 +88,12 @@ public class DetalleprestamoFacadeREST extends AbstractFacade<Detalleprestamo> {
         return em;
     }
 
+    public Detalleprestamo findDetalleprestamo(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Detalleprestamo.class, id);
+        } finally {
+            em.close();
+        }
+    }
 }

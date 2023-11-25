@@ -87,4 +87,14 @@ public class TipoinformacionbienFacadeREST extends AbstractFacade<Tipoinformacio
         return em;
     }
     
+    
+     public Tipoinformacionbien findTipoinformacionbien(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Tipoinformacionbien.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
 }
