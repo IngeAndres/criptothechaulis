@@ -92,8 +92,7 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
-    
+
     @GET
     @Path("listarcuenta")
     public String listarCuentasEmp() {
