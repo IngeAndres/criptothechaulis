@@ -6,8 +6,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,28 +28,39 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u"),
     @NamedQuery(name = "Usuario.findByIdUsuario", query = "SELECT u FROM Usuario u WHERE u.idUsuario = :idUsuario"),
-    @NamedQuery(name = "Usuario.findByDenoUsuario", query = "SELECT u FROM Usuario u WHERE u.denoUsuario = :denoUsuario"),
     @NamedQuery(name = "Usuario.findByPassUsuario", query = "SELECT u FROM Usuario u WHERE u.passUsuario = :passUsuario"),
     @NamedQuery(name = "Usuario.findByAutenticacion", query = "SELECT u FROM Usuario u WHERE u.autenticacion = :autenticacion"),
-    @NamedQuery(name = "Usuario.listarUsuarios",
+    @NamedQuery(
+            name = "Usuario.listarUsuarios",
             query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona, d.celuPersona, d.emailPersona "
             + "FROM Usuario u "
             + "JOIN u.idPersona d "
             + "JOIN d.idTipoDocumento t "
-            + "WHERE u.idTipoUsuario = :idTipoUsuario")})
+            + "WHERE u.idTipoUsuario = :idTipoUsuario"),
+    @NamedQuery(
+            name = "Usuario.obtenerUsuarioPorIdPersona",
+            query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona, d.celuPersona, d.emailPersona "
+            + "FROM Usuario u "
+            + "JOIN u.idPersona d "
+            + "JOIN d.idTipoDocumento t "
+            + "WHERE u.idTipoUsuario = :idTipoUsuario AND d.idPersona = :idPersona"),
+    @NamedQuery(
+            name = "Usuario.obtenerNombresUsuario",
+            query = "SELECT d.nombPersona, d.apPaPersona "
+            + "FROM Usuario u "
+            + "JOIN u.idPersona d "
+            + "WHERE u.idUsuario = :idUsuario"
+    )
+})
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "IdUsuario")
-    private Integer idUsuario;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "DenoUsuario")
-    private String denoUsuario;
+    @Size(min = 1, max = 8)
+    @Column(name = "IdUsuario")
+    private String idUsuario;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -72,30 +81,21 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public Usuario(Integer idUsuario) {
+    public Usuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    public Usuario(Integer idUsuario, String denoUsuario, String passUsuario) {
+    public Usuario(String idUsuario, String passUsuario) {
         this.idUsuario = idUsuario;
-        this.denoUsuario = denoUsuario;
         this.passUsuario = passUsuario;
     }
 
-    public Integer getIdUsuario() {
+    public String getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
+    public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
-    }
-
-    public String getDenoUsuario() {
-        return denoUsuario;
-    }
-
-    public void setDenoUsuario(String denoUsuario) {
-        this.denoUsuario = denoUsuario;
     }
 
     public String getPassUsuario() {

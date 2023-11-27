@@ -1,7 +1,7 @@
 package dao;
 
-import com.google.gson.Gson;
 import service.AbstractFacade;
+import com.google.gson.Gson;
 import dto.Distrito;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -93,50 +92,46 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
         return em;
     }
 
-    public int obtenerIdDistrito(String denoDistrito) {
-        try {
-            Query query = em.createNamedQuery("Distrito.findByDenoDistrito");
-            query.setParameter("denoDistrito", denoDistrito);
-            List<Distrito> results = query.getResultList();
-            if (!results.isEmpty()) {
-                return results.get(0).getIdDistrito();
-            } else {
-                return 0;
-            }
-        } finally {
-            em.close();
-        }
-    }
-
-    @GET
+    // METODO PARA LISTAR LOS DISTRITOS
+    @POST
     @Path("listardistrito")
-
-    public String listarDistritos() {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String listarDistritos(String denoProvincia) {
         Gson g = new Gson();
-        TypedQuery<Distrito> query = em.createNamedQuery("Distrito.findAll", Distrito.class);
 
-        List<Distrito> resultList = query.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+        TypedQuery<String> tq = em.createNamedQuery("Distrito.findByProvincia", String.class);
+        tq.setParameter("denoProvincia", denoProvincia);
+
+        List<String> resultList = tq.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDistritos(resultList);
 
         return g.toJson(listaMapas);
     }
 
-    private List<Map<String, Object>> listarMapaDatos(List<Distrito> resultList) {
+    //METODO PARA LISTAR LOS DISTRITOS EN MAPAS
+    private List<Map<String, Object>> listarMapaDistritos(List<String> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
-        for (Distrito distrito : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("IdDistrito", distrito.getIdDistrito());
-            mapa.put("DenoDistrito", distrito.getDenoDistrito());
-            mapa.put("ProvDistrito", distrito.getProvDistrito());
-            mapa.put("DepaDistrito", distrito.getDepaDistrito());
 
+        for (String distrito : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("denoDistrito", distrito);
             listaMapas.add(mapa);
         }
+        
         return listaMapas;
     }
-    
-    public static void main(String[] args) {
-        DistritoFacadeREST dfrest = new DistritoFacadeREST();
-        System.out.println(dfrest.listarDistritos());
+
+    // METODO PARA OBTENER EL DISTRITO POR DENODISTRITO
+    public Distrito obtenerDistrito(String denoDistrito) {
+        TypedQuery<Distrito> tq = em.createNamedQuery("Distrito.findByDenoDistrito", Distrito.class);
+        tq.setParameter("denoDistrito", denoDistrito);
+
+        try {
+            Distrito distrito = tq.getSingleResult();
+            return distrito;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

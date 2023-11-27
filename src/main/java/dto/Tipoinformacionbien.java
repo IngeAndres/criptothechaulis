@@ -106,5 +106,5 @@ public class Tipoinformacionbien implements Serializable {
     public String toString() {
         return "dto.Tipoinformacionbien[ idTipoInformacionBien=" + idTipoInformacionBien + " ]";
     }
-    
+
 }

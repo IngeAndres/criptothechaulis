@@ -158,5 +158,5 @@ public class Operacionesotrascuentas implements Serializable {
     public String toString() {
         return "dto.Operacionesotrascuentas[ idOperacionOC=" + idOperacionOC + " ]";
     }
-    
+
 }

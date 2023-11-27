@@ -1,22 +1,20 @@
 package dto;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -29,8 +27,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Distrito.findAll", query = "SELECT d FROM Distrito d"),
     @NamedQuery(name = "Distrito.findByIdDistrito", query = "SELECT d FROM Distrito d WHERE d.idDistrito = :idDistrito"),
     @NamedQuery(name = "Distrito.findByDenoDistrito", query = "SELECT d FROM Distrito d WHERE d.denoDistrito = :denoDistrito"),
-    @NamedQuery(name = "Distrito.findByProvDistrito", query = "SELECT d FROM Distrito d WHERE d.provDistrito = :provDistrito"),
-    @NamedQuery(name = "Distrito.findByDepaDistrito", query = "SELECT d FROM Distrito d WHERE d.depaDistrito = :depaDistrito")})
+    @NamedQuery(
+            name = "Distrito.findByProvincia",
+            query = "SELECT d.denoDistrito FROM Distrito d JOIN d.idProvincia p WHERE p.denoProvincia = :denoProvincia"
+    )})
 public class Distrito implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,18 +44,9 @@ public class Distrito implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "DenoDistrito")
     private String denoDistrito;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "ProvDistrito")
-    private String provDistrito;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "DepaDistrito")
-    private String depaDistrito;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idDistrito")
-    private List<Datospersonales> datospersonalesList;
+    @JoinColumn(name = "IdProvincia", referencedColumnName = "IdProvincia")
+    @ManyToOne(optional = false)
+    private Provincia idProvincia;
 
     public Distrito() {
     }
@@ -64,11 +55,9 @@ public class Distrito implements Serializable {
         this.idDistrito = idDistrito;
     }
 
-    public Distrito(Integer idDistrito, String denoDistrito, String provDistrito, String depaDistrito) {
+    public Distrito(Integer idDistrito, String denoDistrito) {
         this.idDistrito = idDistrito;
         this.denoDistrito = denoDistrito;
-        this.provDistrito = provDistrito;
-        this.depaDistrito = depaDistrito;
     }
 
     public Integer getIdDistrito() {
@@ -87,29 +76,12 @@ public class Distrito implements Serializable {
         this.denoDistrito = denoDistrito;
     }
 
-    public String getProvDistrito() {
-        return provDistrito;
+    public Provincia getIdProvincia() {
+        return idProvincia;
     }
 
-    public void setProvDistrito(String provDistrito) {
-        this.provDistrito = provDistrito;
-    }
-
-    public String getDepaDistrito() {
-        return depaDistrito;
-    }
-
-    public void setDepaDistrito(String depaDistrito) {
-        this.depaDistrito = depaDistrito;
-    }
-
-    @XmlTransient
-    public List<Datospersonales> getDatospersonalesList() {
-        return datospersonalesList;
-    }
-
-    public void setDatospersonalesList(List<Datospersonales> datospersonalesList) {
-        this.datospersonalesList = datospersonalesList;
+    public void setIdProvincia(Provincia idProvincia) {
+        this.idProvincia = idProvincia;
     }
 
     @Override
@@ -136,5 +108,5 @@ public class Distrito implements Serializable {
     public String toString() {
         return "dto.Distrito[ idDistrito=" + idDistrito + " ]";
     }
-    
+
 }

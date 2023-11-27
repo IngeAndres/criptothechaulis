@@ -147,5 +147,5 @@ public class Operacionescuentaspropias implements Serializable {
     public String toString() {
         return "dto.Operacionescuentaspropias[ idOperacionCP=" + idOperacionCP + " ]";
     }
-    
+
 }

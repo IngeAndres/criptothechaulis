@@ -17,6 +17,23 @@
     <class>dto.Operacionescuentaspropias</class>
     <class>dto.Operacionesotrascuentas</class>
     <class>dto.Tipooperacion</class>
+    <class>dao.Operacionescuentaspropias</class>
+    <class>dao.Detalleprestamo</class>
+    <class>dao.Operacionesotrascuentas</class>
+    <class>dao.Datospersonales</class>
+    <class>dao.Tipooperacion</class>
+    <class>dao.Cuenta</class>
+    <class>dao.Tipocomprobante</class>
+    <class>dao.Tipousuario</class>
+    <class>dao.Distrito</class>
+    <class>dao.Prestamo</class>
+    <class>dao.Tipocuenta</class>
+    <class>dao.Tipodocumento</class>
+    <class>dao.Tipoprestamo</class>
+    <class>dao.Tipoinformacionbien</class>
+    <class>dao.Usuario</class>
+    <class>dto.Departamento</class>
+    <class>dto.Provincia</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/criptothechaulis?zeroDateTimeBehavior=CONVERT_TO_NULL"/>

@@ -106,5 +106,5 @@ public class Tipocomprobante implements Serializable {
     public String toString() {
         return "dto.Tipocomprobante[ idTipoComprobante=" + idTipoComprobante + " ]";
     }
-    
+
 }

@@ -46,7 +46,17 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Datospersonales.listar",
             query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona, d.celuPersona, d.emailPersona "
             + "FROM Datospersonales d "
-            + "JOIN d.idTipoDocumento t")})
+            + "JOIN d.idTipoDocumento t"),
+    @NamedQuery(name = "Datospersonales.obtenerDatosPersonalesPorId",
+            query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.ruc ,d.apPaPersona, d.apMaPersona ,d.nombPersona,d.genePersona, d.fechPersona, "
+            + "d.direPersona, d.celuPersona, d.emailPersona, di.denoDistrito, p.denoProvincia, de.denoDepartamento "
+            + "FROM Datospersonales d "
+            + "JOIN d.idTipoDocumento t "
+            + "JOIN d.idDistrito di "
+            + "JOIN di.idProvincia p "
+            + "JOIN p.idDepartamento de "
+            + "WHERE d.idPersona = :idPersona")
+})
 public class Datospersonales implements Serializable {
 
     private static final long serialVersionUID = 1L;

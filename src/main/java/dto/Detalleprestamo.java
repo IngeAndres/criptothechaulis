@@ -193,5 +193,5 @@ public class Detalleprestamo implements Serializable {
     public String toString() {
         return "dto.Detalleprestamo[ idDetallePrestamo=" + idDetallePrestamo + " ]";
     }
-    
+
 }

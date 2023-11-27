@@ -116,5 +116,5 @@ public class Prestamo implements Serializable {
     public String toString() {
         return "dto.Prestamo[ idPrestamo=" + idPrestamo + " ]";
     }
-    
+
 }

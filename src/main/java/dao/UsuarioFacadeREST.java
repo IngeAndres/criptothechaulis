@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -60,20 +61,20 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Usuario entity) {
+    public void edit(@PathParam("id") String id, Usuario entity) {
         super.edit(entity);
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
+    public void remove(@PathParam("id") String id) {
         super.remove(super.find(id));
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Usuario find(@PathParam("id") Integer id) {
+    public Usuario find(@PathParam("id") String id) {
         return super.find(id);
     }
 
@@ -103,7 +104,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return em;
     }
 
-    // INICIO DE SESIÓN DE USUARIO
+    // METODO PARA INICIAR SESION
     @POST
     @Path("iniciarsesion")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -113,13 +114,15 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String logi = request.get("logi").getAsString();
-        String pass = request.get("pass").getAsString();
-        Usuario u = buscarUsuario(logi);
+        String idUsuario = request.get("idUsuario").getAsString();
+        String passUsuario = request.get("passUsuario").getAsString();
+        Usuario u = em.find(Usuario.class, idUsuario);
+        String usuario = obtenerNombresUsuario(idUsuario);
 
         if (u != null) {
-            if (u.getPassUsuario().equals(pass)) {
-                tokenServer = JWT.generateToken(logi);
+            if (u.getPassUsuario().equals(passUsuario)) {
+                tokenServer = JWT.generateToken(idUsuario);
+                response.addProperty("usuario", usuario);
                 response.addProperty("status", 200);
                 response.addProperty("token", tokenServer);
             } else {
@@ -132,7 +135,20 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return g.toJson(response);
     }
 
-    // CÓDIGO QR
+    // METODO PARA OBTENER LOS NOMBRES DEL USUARIO
+    private String obtenerNombresUsuario(String idUsuario) {
+        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.obtenerNombresUsuario", Object[].class);
+        tq.setParameter("idUsuario", idUsuario);
+
+        try {
+            Object[] usuario = tq.getSingleResult();
+            return usuario[0] + " " + usuario[1];
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    // METODO PARA GENERAR EL CODIGO QR
     @POST
     @Path("generarurl")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -142,18 +158,18 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String logi = request.get("logi").getAsString();
-        Usuario u = buscarUsuario(logi);
+        String idUsuario = request.get("idUsuario").getAsString();
+        Usuario u = em.find(Usuario.class, idUsuario);
 
         if (u != null) {
-            boolean isAuth = generarURL(response, logi, u);
+            boolean isAuth = generarURL(response, idUsuario, u);
             response.addProperty("auth", isAuth);
         }
 
         return g.toJson(response);
     }
 
-    // AUTENTICACIÓN DE DOS FACTORES
+    // METODO PARA LA AUTENTICACION DE DOS FACTORES
     @POST
     @Path("autenticacion")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -163,16 +179,16 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String logi = request.get("logi").getAsString();
+        String idUsuario = request.get("idUsuario").getAsString();
         String code = request.get("code").getAsString();
         String tokenClient = extraerTokenHeader(headers);
-        Usuario u = buscarUsuario(logi);
+        Usuario u = em.find(Usuario.class, idUsuario);
 
         if (u != null) {
             em.getTransaction().begin();
-            String logiToken = JWT.verifyToken(tokenClient);
+            String idToken = JWT.verifyToken(tokenClient);
 
-            if (logi.equals(logiToken)) {
+            if (idUsuario.equals(idToken)) {
                 boolean resultado = autenticarCodigo(u, code);
                 response.addProperty("resultado", resultado);
                 em.getTransaction().commit();
@@ -184,7 +200,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return g.toJson(response);
     }
 
-    // ACTUALIZACIÓN DE CONTRASEÑA
+    // METODO PARA ACTUALIZAR LA CONTRASEÑA
     @PUT
     @Path("cambiarcontrasena")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -194,19 +210,19 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String logi = request.get("logi").getAsString();
-        String pass = request.get("pass").getAsString();
-        String newPass1 = request.get("newpass1").getAsString();
-        String newPass2 = request.get("newpass2").getAsString();
+        String idUsuario = request.get("idUsuario").getAsString();
+        String passUsuario = request.get("passUsuario").getAsString();
+        String newPass1 = request.get("newPass1").getAsString();
+        String newPass2 = request.get("newPass2").getAsString();
         String tokenClient = extraerTokenHeader(headers);
-        Usuario u = buscarUsuario(logi);
+        Usuario u = em.find(Usuario.class, idUsuario);
 
         if (u != null) {
             em.getTransaction().begin();
-            String logiToken = JWT.verifyToken(tokenClient);
+            String idToken = JWT.verifyToken(tokenClient);
 
-            if (logi.equals(logiToken)) {
-                String resultado = cambiarContrasena(u, pass, newPass1, newPass2);
+            if (idUsuario.equals(idToken)) {
+                String resultado = cambiarContrasena(u, passUsuario, newPass1, newPass2);
                 response.addProperty("resultado", resultado);
                 em.getTransaction().commit();
             } else {
@@ -217,18 +233,10 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return g.toJson(response);
     }
 
-    // BÚSQUEDA DE USUARIO
-    private Usuario buscarUsuario(String deno) {
-        TypedQuery<Usuario> tq = em.createNamedQuery("Usuario.findByDenoUsuario", Usuario.class);
-        tq.setParameter("denoUsuario", deno);
-        Usuario u = tq.getSingleResult();
-        return (u != null) ? u : null;
-    }
-
-    // GENERACIÓN DE URL OTP
-    private boolean generarURL(JsonObject response, String logi, Usuario u) {
+    // METODO PARA LA GENERACION DEL URL OTP
+    private boolean generarURL(JsonObject response, String idUsuario, Usuario u) {
         String issuer = "TheChaulis";
-        String user = logi;
+        String user = idUsuario;
         String auth = u.getAutenticacion();
 
         if (auth == null || auth.isEmpty()) {
@@ -241,7 +249,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return false;
     }
 
-    // VALIDACIÓN DEL CÓDIGO DE 6 DÍGITOS
+    // METODO PARA LA VALIDACION DEL CODIGO DE 6 DIGITOS
     private boolean autenticarCodigo(Usuario u, String code) {
         String auth = u.getAutenticacion();
 
@@ -255,7 +263,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return code.equals(totp.now());
     }
 
-    // OBTENCIÓN DEL TOKENCLIENT DE LA AUTHORIZATION BEARER
+    // METODO PARA LA OBTENCION DEL TOKEN CLIENT DE LA AUTHORIZATION BEARER
     private String extraerTokenHeader(HttpHeaders headers) {
         String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 
@@ -266,7 +274,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return null;
     }
 
-    // VALIDACIÓN DE CONTRASEÑA
+    // METODO DE VALIDACION DE CONTRASEÑA
     private String cambiarContrasena(Usuario u, String pass, String newPass1, String newPass2) {
         if (u.getPassUsuario().equals(pass)) {
             if (newPass1.equals(newPass2)) {
@@ -284,38 +292,71 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         }
     }
 
-    // LISTADO DE CLIENTES
+    // METODO PARA LISTAR LOS USUARIOS DE TIPO CLIENTE
     @GET
-    @Path("listarclientes")
-    public String listarUsuariosPorTipoUsuario() {
+    @Path("listarusuarios")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String listarUsuarios() {
         Gson g = new Gson();
-        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.listarUsuarios", Object[].class);
 
+        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.listarUsuarios", Object[].class);
         Tipousuario tipoUsuario = em.find(Tipousuario.class, 3);
         tq.setParameter("idTipoUsuario", tipoUsuario);
 
-        List<Object[]> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+        List<Object[]> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaUsuarios(list);
 
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    //MAPEADO DE LA LISTA DE CLIENTES
-    private List<Map<String, Object>> listarMapaDatos(List<Object[]> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
-        for (Object[] result : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idPersona", result[0]);
-            mapa.put("denoTipoDocumento", result[1]);
-            mapa.put("docuPersona", result[2]);
-            mapa.put("apPaPersona", result[3]);
-            mapa.put("apMaPersona", result[4]);
-            mapa.put("nombPersona", result[5]);
-            mapa.put("celuPersona", result[6]);
-            mapa.put("emailPersona", result[7]);
+    // METODO PARA LISTAR LOS USUARIOS EN MAPAS
+    private List<Map<String, Object>> listarMapaUsuarios(List<Object[]> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
-            listaMapas.add(mapa);
+        for (Object[] usuario : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idPersona", usuario[0]);
+            map.put("denoTipoDocumento", usuario[1]);
+            map.put("docuPersona", usuario[2]);
+            map.put("apPaPersona", usuario[3]);
+            map.put("apMaPersona", usuario[4]);
+            map.put("nombPersona", usuario[5]);
+            map.put("celuPersona", usuario[6]);
+            map.put("emailPersona", usuario[7]);
+            mapList.add(map);
         }
-        return listaMapas;
+
+        return mapList;
+    }
+
+    // METODO PARA OBTENER UN CLIENTE POR ID
+    @GET
+    @Path("obtenercliente")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String obtenerClientePorIdPersona(String data) {
+        Gson g = new Gson();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        int idPersona = request.get("codigopersona").getAsInt();
+
+        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.obtenerUsuarioPorIdPersona", Object[].class);
+        Tipousuario tipoUsuario = em.find(Tipousuario.class, 3);
+        tq.setParameter("idTipoUsuario", tipoUsuario);
+        tq.setParameter("idPersona", idPersona);
+
+        Object[] usuario = tq.getSingleResult();
+        Map<String, Object> map = new HashMap<>();
+        map.put("idPersona", usuario[0]);
+        map.put("denoTipoDocumento", usuario[1]);
+        map.put("docuPersona", usuario[2]);
+        map.put("apPaPersona", usuario[3]);
+        map.put("apMaPersona", usuario[4]);
+        map.put("nombPersona", usuario[5]);
+        map.put("celuPersona", usuario[6]);
+        map.put("emailPersona", usuario[7]);
+
+        return g.toJson(map);
     }
 }

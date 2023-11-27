@@ -254,5 +254,5 @@ public class Cuenta implements Serializable {
     public String toString() {
         return "dto.Cuenta[ idCuenta=" + idCuenta + " ]";
     }
-    
+
 }

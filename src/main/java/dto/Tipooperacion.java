@@ -132,5 +132,5 @@ public class Tipooperacion implements Serializable {
     public String toString() {
         return "dto.Tipooperacion[ idTipoOperacion=" + idTipoOperacion + " ]";
     }
-    
+
 }

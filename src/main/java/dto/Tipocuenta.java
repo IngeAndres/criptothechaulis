@@ -106,5 +106,5 @@ public class Tipocuenta implements Serializable {
     public String toString() {
         return "dto.Tipocuenta[ idTipoCuenta=" + idTipoCuenta + " ]";
     }
-    
+
 }

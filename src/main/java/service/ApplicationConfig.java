@@ -26,11 +26,13 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(dao.CuentaFacadeREST.class);
         resources.add(dao.DatospersonalesFacadeREST.class);
+        resources.add(dao.DepartamentoFacadeREST.class);
         resources.add(dao.DetalleprestamoFacadeREST.class);
         resources.add(dao.DistritoFacadeREST.class);
         resources.add(dao.OperacionescuentaspropiasFacadeREST.class);
         resources.add(dao.OperacionesotrascuentasFacadeREST.class);
         resources.add(dao.PrestamoFacadeREST.class);
+        resources.add(dao.ProvinciaFacadeREST.class);
         resources.add(dao.TipocomprobanteFacadeREST.class);
         resources.add(dao.TipocuentaFacadeREST.class);
         resources.add(dao.TipodocumentoFacadeREST.class);

@@ -99,20 +99,25 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         return em;
     }
 
+    // METOOD PARA LISTAR LOS DATOS PERSONALES
     @GET
-    @Path("listardatos")
+    @Path("listardatospersonales")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public String listarDatosPersonales() {
         Gson g = new Gson();
-        TypedQuery<Object[]> query = em.createNamedQuery("Datospersonales.listar", Object[].class);
 
+        TypedQuery<Object[]> query = em.createNamedQuery("Datospersonales.listar", Object[].class);
         List<Object[]> resultList = query.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaDatos(resultList);
+        List<Map<String, Object>> listaMapas = listarMapaDatosPersonales(resultList);
 
         return g.toJson(listaMapas);
     }
 
-    private List<Map<String, Object>> listarMapaDatos(List<Object[]> resultList) {
+    // METODO PARA LISTAR LOS DATOS PERSONALES EN MAPAS
+    private List<Map<String, Object>> listarMapaDatosPersonales(List<Object[]> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
+
         for (Object[] result : resultList) {
             Map<String, Object> mapa = new HashMap<>();
             mapa.put("idPersona", result[0]);
@@ -123,73 +128,192 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
             mapa.put("nombPersona", result[5]);
             mapa.put("celuPersona", result[6]);
             mapa.put("emailPersona", result[7]);
-
             listaMapas.add(mapa);
         }
+
         return listaMapas;
     }
 
-    public boolean insertarDatosPersonales(Datospersonales datosPersonales) {
-        em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(datosPersonales);
-            em.getTransaction().commit();
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
+    // METODO PARA OBTENER LOS DATOS PERSONALES POR IDPERSONA
     @POST
-    @Path("insertarDatos")
+    @Path("obtenerdatospersonales")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String insertDatos(String data) throws ParseException {
+    public String obtenerDatosPersonalesPorId(int idPersona) {
         Gson g = new Gson();
+
+        TypedQuery<Object[]> tq = em.createNamedQuery("Datospersonales.obtenerDatosPersonalesPorId", Object[].class);
+        tq.setParameter("idPersona", idPersona);
+        Object[] usuario = tq.getSingleResult();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("idPersona", usuario[0]);
+        map.put("denoTipoDocumento", usuario[1]);
+        map.put("docuPersona", usuario[2]);
+        map.put("ruc", usuario[3]);
+        map.put("apPaPersona", usuario[4]);
+        map.put("apMaPersona", usuario[5]);
+        map.put("nombPersona", usuario[6]);
+        map.put("genePersona", usuario[7]);
+        map.put("fechPersona", usuario[8]);
+        map.put("direPersona", usuario[9]);
+        map.put("celuPersona", usuario[10]);
+        map.put("emailPersona", usuario[11]);
+        map.put("denoDistrito", usuario[12]);
+        map.put("denoProvincia", usuario[13]);
+        map.put("denoDepartamento", usuario[14]);
+
+        return g.toJson(map);
+    }
+
+    // METODO PARA INSERTAR LOS DATOS PERSONALES
+    @POST
+    @Path("insertardatospersonales")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String insertarDatosPersonales(String data) throws ParseException {
+        Gson gson = new Gson();
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        String tipodocumento = request.get("documento").getAsString();
-        String docuPersona = request.get("numerodoc").getAsString();
-        String RUC = request.get("ruc").getAsString();
-        String NombPersona = request.get("nombre").getAsString();
-        String ApPaPersona = request.get("paterno").getAsString();
-        String ApMaPersona = request.get("materno").getAsString();
-        String GenePersona = request.get("genero").getAsString();
-        String Fecha = request.get("fecha").getAsString();
-        String DirePersona = request.get("direccion").getAsString();
-        String CeluPersona = request.get("celular").getAsString();
-        String EmailPersona = request.get("email").getAsString();
-        String Distrito = request.get("distrito").getAsString();
+        String denoTipoDocumento = request.get("denoTipoDocumento").getAsString();
+        String docuPersona = request.get("docuPersona").getAsString();
+        String ruc = request.get("ruc").getAsString();
+        String nombPersona = request.get("nombPersona").getAsString();
+        String apPaPersona = request.get("apPaPersona").getAsString();
+        String apMaPersona = request.get("apMaPersona").getAsString();
+        char genePersona = request.get("genePersona").getAsString().charAt(0);
+        String fecha = request.get("fechPersona").getAsString();
+        String direPersona = request.get("direPersona").getAsString();
+        String celuPersona = request.get("celuPersona").getAsString();
+        String emailPersona = request.get("emailPersona").getAsString();
+        String denoDistrito = request.get("denoDistrito").getAsString();
 
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        Date FechPersona = formatoFecha.parse(Fecha);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechPersona = sdf.parse(fecha);
 
-        TipodocumentoFacadeREST tipdoc = new TipodocumentoFacadeREST();
-        int IdTipoDocumento = tipdoc.obtenerIdTipoDocumento(tipodocumento);
+        Tipodocumento tipoDocumento = new TipodocumentoFacadeREST().obtenerTipoDocumento(denoTipoDocumento);
+        Distrito distrito = new DistritoFacadeREST().obtenerDistrito(denoDistrito);
 
-        DistritoFacadeREST distric = new DistritoFacadeREST();
-        int IdDistrito = distric.obtenerIdDistrito(Distrito);
+        try {
+            em.getTransaction().begin();
+            Datospersonales datosPersonales = new Datospersonales();
 
-        Datospersonales datosPersonales = new Datospersonales();
-        datosPersonales.setDocuPersona(docuPersona);
-        datosPersonales.setRuc(RUC);
-        datosPersonales.setNombPersona(NombPersona);
-        datosPersonales.setApPaPersona(ApPaPersona);
-        datosPersonales.setApMaPersona(ApMaPersona);
-        datosPersonales.setGenePersona(GenePersona.charAt(0));
-        datosPersonales.setFechPersona(FechPersona);
-        datosPersonales.setDirePersona(DirePersona);
-        datosPersonales.setCeluPersona(CeluPersona);
-        datosPersonales.setEmailPersona(EmailPersona);
+            datosPersonales.setDocuPersona(docuPersona);
+            datosPersonales.setRuc(ruc);
+            datosPersonales.setNombPersona(nombPersona);
+            datosPersonales.setApPaPersona(apPaPersona);
+            datosPersonales.setApMaPersona(apMaPersona);
+            datosPersonales.setGenePersona(genePersona);
+            datosPersonales.setFechPersona(fechPersona);
+            datosPersonales.setDirePersona(direPersona);
+            datosPersonales.setCeluPersona(celuPersona);
+            datosPersonales.setEmailPersona(emailPersona);
+            datosPersonales.setIdTipoDocumento(tipoDocumento);
+            datosPersonales.setIdDistrito(distrito);
 
-        datosPersonales.setIdTipoDocumento(new Tipodocumento(IdTipoDocumento));
-        datosPersonales.setIdDistrito(new Distrito(IdDistrito));
+            em.persist(datosPersonales);
+            em.getTransaction().commit();
+            response.addProperty("success", Boolean.TRUE);
+        } catch (Exception e) {
+            response.addProperty("success", Boolean.FALSE);
+        }
 
-        boolean insertar = insertarDatosPersonales(datosPersonales);
-        response.addProperty("success", insertar);
+        return gson.toJson(response);
+    }
 
-        return g.toJson(response);
+    // METODO PARA EDITAR LOS DATOS PERSONALES
+    @POST
+    @Path("editardatospersonales")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String editarDatosPersonales(String data) throws ParseException {
+        Gson gson = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        int idPersona = request.get("idPersona").getAsInt();
+        String denoTipoDocumento = request.get("denoTipoDocumento").getAsString();
+        String docuPersona = request.get("docuPersona").getAsString();
+        String ruc = request.get("ruc").getAsString();
+        String nombPersona = request.get("nombPersona").getAsString();
+        String apPaPersona = request.get("apPaPersona").getAsString();
+        String apMaPersona = request.get("apMaPersona").getAsString();
+        char genePersona = request.get("genePersona").getAsString().charAt(0);
+        String fecha = request.get("fechPersona").getAsString();
+        String direPersona = request.get("direPersona").getAsString();
+        String celuPersona = request.get("celuPersona").getAsString();
+        String emailPersona = request.get("emailPersona").getAsString();
+        String denoDistrito = request.get("denoDistrito").getAsString();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechPersona = sdf.parse(fecha);
+
+        Tipodocumento tipoDocumento = new TipodocumentoFacadeREST().obtenerTipoDocumento(denoTipoDocumento);
+        Distrito distrito = new DistritoFacadeREST().obtenerDistrito(denoDistrito);
+
+        try {
+            em.getTransaction().begin();
+            Datospersonales datosPersonales = em.find(Datospersonales.class, idPersona);
+
+            if (datosPersonales != null) {
+                datosPersonales.setDocuPersona(docuPersona);
+                datosPersonales.setRuc(ruc);
+                datosPersonales.setNombPersona(nombPersona);
+                datosPersonales.setApPaPersona(apPaPersona);
+                datosPersonales.setApMaPersona(apMaPersona);
+                datosPersonales.setGenePersona(genePersona);
+                datosPersonales.setFechPersona(fechPersona);
+                datosPersonales.setDirePersona(direPersona);
+                datosPersonales.setCeluPersona(celuPersona);
+                datosPersonales.setEmailPersona(emailPersona);
+                datosPersonales.setIdTipoDocumento(tipoDocumento);
+                datosPersonales.setIdDistrito(distrito);
+
+                em.merge(datosPersonales);
+                em.getTransaction().commit();
+                response.addProperty("success", Boolean.TRUE);
+            } else {
+                response.addProperty("success", Boolean.FALSE);
+            }
+        } catch (Exception e) {
+            response.addProperty("success", Boolean.FALSE);
+        } finally {
+            em.close();
+        }
+
+        return gson.toJson(response);
+    }
+
+    // METODO PARA ELIMINAR LOS DATOS PERSONALES
+    @POST
+    @Path("eliminardatospersonales")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String eliminarDatosPersonales(String data) {
+        Gson gson = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        int idPersona = request.get("idPersona").getAsInt();
+
+        try {
+            em.getTransaction().begin();
+            Datospersonales datosPersonales = em.find(Datospersonales.class, idPersona);
+
+            if (datosPersonales != null) {
+                em.remove(datosPersonales);
+                em.getTransaction().commit();
+                response.addProperty("success", Boolean.TRUE);
+            } else {
+                response.addProperty("success", Boolean.FALSE);
+            }
+            return gson.toJson(response);
+        } catch (Exception ex) {
+            response.addProperty("success", Boolean.FALSE);
+            return gson.toJson(response);
+        } finally {
+            em.close();
+        }
     }
 }

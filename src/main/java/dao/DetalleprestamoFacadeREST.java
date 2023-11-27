@@ -5,8 +5,6 @@ import dto.Detalleprestamo;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,8 +25,7 @@ import javax.ws.rs.core.MediaType;
 public class DetalleprestamoFacadeREST extends AbstractFacade<Detalleprestamo> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
-    private EntityManager em = emf.createEntityManager();
+    private EntityManager em;
 
     public DetalleprestamoFacadeREST() {
         super(Detalleprestamo.class);

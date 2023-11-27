@@ -106,5 +106,5 @@ public class Tipodocumento implements Serializable {
     public String toString() {
         return "dto.Tipodocumento[ idTipoDocumento=" + idTipoDocumento + " ]";
     }
-    
+
 }
