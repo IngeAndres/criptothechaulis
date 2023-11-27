@@ -141,6 +141,5 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         } finally {
             em.close();
         }
-
     }
 }
