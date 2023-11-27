@@ -5,6 +5,8 @@ import dto.Tipocomprobante;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,7 +27,8 @@ import javax.ws.rs.core.MediaType;
 public class TipocomprobanteFacadeREST extends AbstractFacade<Tipocomprobante> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
-    private EntityManager em;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
+    private EntityManager em = emf.createEntityManager();
 
     public TipocomprobanteFacadeREST() {
         super(Tipocomprobante.class);
@@ -83,5 +86,14 @@ public class TipocomprobanteFacadeREST extends AbstractFacade<Tipocomprobante> {
     protected EntityManager getEntityManager() {
         return em;
     }
-
+    
+    public Tipocomprobante findTipocomprobante(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Tipocomprobante.class, id);
+        } finally {
+            em.close();
+        }
+    }
+    
 }

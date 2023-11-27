@@ -2,9 +2,12 @@ package dao;
 
 import service.AbstractFacade;
 import dto.Detalleprestamo;
+import dto.Prestamo;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,7 +28,8 @@ import javax.ws.rs.core.MediaType;
 public class DetalleprestamoFacadeREST extends AbstractFacade<Detalleprestamo> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
-    private EntityManager em;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
+    private EntityManager em = emf.createEntityManager();
 
     public DetalleprestamoFacadeREST() {
         super(Detalleprestamo.class);
@@ -84,4 +88,12 @@ public class DetalleprestamoFacadeREST extends AbstractFacade<Detalleprestamo> {
         return em;
     }
 
+    public Detalleprestamo findDetalleprestamo(Integer id) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Detalleprestamo.class, id);
+        } finally {
+            em.close();
+        }
+    }
 }

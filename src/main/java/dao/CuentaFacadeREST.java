@@ -1,11 +1,19 @@
 package dao;
 
+import com.google.gson.Gson;
 import service.AbstractFacade;
 import dto.Cuenta;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -25,7 +33,8 @@ import javax.ws.rs.core.MediaType;
 public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
-    private EntityManager em;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
+    private EntityManager em = emf.createEntityManager();
 
     public CuentaFacadeREST() {
         super(Cuenta.class);
@@ -83,5 +92,55 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
     protected EntityManager getEntityManager() {
         return em;
     }
+    
+    
+    @GET
+    @Path("listarcuenta")
+    public String listarCuentasEmp() {
+        Gson g = new Gson();
+        TypedQuery<Object[]> query = em.createNamedQuery("Cuenta.listarcuentaEmp", Object[].class);
 
+        List<Object[]> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaCuentaEmp(resultList);
+
+        return g.toJson(listaMapas);
+    }
+    
+    private List<Map<String, Object>> listarMapaCuentaEmp(List<Object[]> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Object[] result : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("apPaPersona", result[0]);
+            mapa.put("apMaPersona", result[1]);
+            mapa.put("nombPersona", result[2]);
+            mapa.put("denoTipoCuenta", result[3]);
+            mapa.put("numbCuenta", result[4]);
+            mapa.put("saldoDisponible", result[5]);
+            mapa.put("saldoContable", result[6]);
+            mapa.put("estadoCuenta", result[7]);
+            mapa.put("fechaApertura", result[8]);
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
+    }
+    
+     public Cuenta obtenerPorNumCuenta(String NumberCuenta) {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createNamedQuery("Cuenta.findByNumbCuenta");
+            query.setParameter("numbCuenta", NumberCuenta);
+
+            List<Cuenta> results = query.getResultList();
+
+            if (!results.isEmpty()) {
+                return results.get(0);
+            } else {
+                return null;
+            }
+        } finally {
+            em.close();
+        }
+
+    }
 }
