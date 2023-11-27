@@ -331,7 +331,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     }
 
     // METODO PARA OBTENER UN CLIENTE POR ID
-    @GET
+    /*@GET
     @Path("obtenercliente")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -358,5 +358,5 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         map.put("emailPersona", usuario[7]);
 
         return g.toJson(map);
-    }
+    }*/
 }
