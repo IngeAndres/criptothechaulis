@@ -301,7 +301,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         Gson g = new Gson();
 
         TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.listarUsuarios", Object[].class);
-        Tipousuario tipoUsuario = em.find(Tipousuario.class, 3);
+        Tipousuario tipoUsuario = em.find(Tipousuario.class, 2);
         tq.setParameter("idTipoUsuario", tipoUsuario);
 
         List<Object[]> list = tq.getResultList();

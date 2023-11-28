@@ -370,4 +370,37 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
 
         return null;
     }
+
+    // METODO PARA LISTAR DOCUPERSONA
+    @GET
+    @Path("listardocupersona")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String listarDocuPersona() {
+        Gson g = new Gson();
+
+        TypedQuery<Datospersonales> query = em.createNamedQuery("Datospersonales.findAll", Datospersonales.class);
+        List<Datospersonales> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDocuPersona(resultList);
+
+        return g.toJson(listaMapas);
+    }
+
+    // METODO PARA LISTAR DOCUPERSONA EN MAPAS
+    private List<Map<String, Object>> listarMapaDocuPersona(List<Datospersonales> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+
+        for (Datospersonales result : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("docuPersona", result.getDocuPersona());
+            listaMapas.add(mapa);
+        }
+
+        return listaMapas;
+    }
+
+    public static void main(String[] args) {
+        DatospersonalesFacadeREST dfrest = new DatospersonalesFacadeREST();
+        System.out.println(dfrest.listarDocuPersona());
+    }
 }
