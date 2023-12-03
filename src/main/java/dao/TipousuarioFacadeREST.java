@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -111,13 +112,26 @@ public class TipousuarioFacadeREST extends AbstractFacade<Tipousuario> {
     private List<Map<String, Object>> listarMapaTiposUsuario(List<Tipousuario> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
 
-        for (Tipousuario tipoDocumento : resultList) {
+        for (Tipousuario tipoUsuario : resultList) {
             Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idTipoUsuario", tipoDocumento.getIdTipoUsuario());
-            mapa.put("denoTipoUsuario", tipoDocumento.getDenoTipoUsuario());
+            mapa.put("idTipoUsuario", tipoUsuario.getIdTipoUsuario());
+            mapa.put("denoTipoUsuario", tipoUsuario.getDenoTipoUsuario());
             listaMapas.add(mapa);
         }
 
         return listaMapas;
+    }
+    
+    // METODO PARA OBTENER EL TIPO DE USUARIO POR DENOTIPOUSUARIO
+    public Tipousuario obtenerTipoUsuario(String denoTipoUsuario) {
+        TypedQuery<Tipousuario> tq = em.createNamedQuery("Tipousuario.findByDenoTipoUsuario", Tipousuario.class);
+        tq.setParameter("denoTipoUsuario", denoTipoUsuario);
+
+        try {
+            Tipousuario tipoUsuario = tq.getSingleResult();
+            return tipoUsuario;
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

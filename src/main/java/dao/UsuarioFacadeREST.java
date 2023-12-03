@@ -3,6 +3,7 @@ package dao;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dto.Datospersonales;
 import dto.Tipousuario;
 import service.AbstractFacade;
 import dto.Usuario;
@@ -294,69 +295,154 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
 
     // METODO PARA LISTAR LOS USUARIOS DE TIPO CLIENTE
     @GET
-    @Path("listarusuarios")
+    @Path("listarclientes")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String listarUsuarios() {
+    public String listarClientes(@Context HttpHeaders headers) {
         Gson g = new Gson();
+        JsonObject response = new JsonObject();
 
-        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.listarUsuarios", Object[].class);
-        Tipousuario tipoUsuario = em.find(Tipousuario.class, 2);
-        tq.setParameter("idTipoUsuario", tipoUsuario);
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
 
-        List<Object[]> list = tq.getResultList();
-        List<Map<String, Object>> mapList = listarMapaUsuarios(list);
+        if (idToken != null) {
+            TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.listar", Object[].class);
+            Tipousuario tipoUsuario = em.find(Tipousuario.class, 2);
+            tq.setParameter("idTipoUsuario", tipoUsuario);
+            List<Object[]> list = tq.getResultList();
+            List<Map<String, Object>> mapList = listarMapaClientes(list);
+            response.addProperty("resultado", "ok");
+            response.add("datos", g.toJsonTree(mapList));
 
-        return g.toJson(mapList);
+        } else {
+            response.addProperty("resultado", "error");
+        }
+        return g.toJson(response);
     }
 
     // METODO PARA LISTAR LOS USUARIOS EN MAPAS
-    private List<Map<String, Object>> listarMapaUsuarios(List<Object[]> list) {
+    private List<Map<String, Object>> listarMapaClientes(List<Object[]> list) {
         List<Map<String, Object>> mapList = new ArrayList<>();
 
         for (Object[] usuario : list) {
             Map<String, Object> map = new HashMap<>();
-            map.put("idPersona", usuario[0]);
+            map.put("idUsuario", usuario[0]);
             map.put("denoTipoDocumento", usuario[1]);
             map.put("docuPersona", usuario[2]);
             map.put("apPaPersona", usuario[3]);
             map.put("apMaPersona", usuario[4]);
             map.put("nombPersona", usuario[5]);
-            map.put("celuPersona", usuario[6]);
-            map.put("emailPersona", usuario[7]);
             mapList.add(map);
         }
 
         return mapList;
     }
 
-    // METODO PARA OBTENER UN CLIENTE POR ID
-    /*@GET
-    @Path("obtenercliente")
+    // METODO PARA LISTAR LOS USUARIOS
+    @GET
+    @Path("listarusuarios")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String obtenerClientePorIdPersona(String data) {
+    public String listarUsuarios() {
         Gson g = new Gson();
+
+        TypedQuery<Usuario> tq = em.createNamedQuery("Usuario.findAll", Usuario.class);
+        List<Usuario> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaUsuarios(list);
+
+        return g.toJson(mapList);
+    }
+
+    // METODO PARA LISTAR LOS USUARIOS EN MAPAS
+    private List<Map<String, Object>> listarMapaUsuarios(List<Usuario> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
+
+        for (Usuario usuario : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idUsuario", usuario.getIdUsuario());
+            mapList.add(map);
+        }
+
+        return mapList;
+    }
+
+    // METODO PARA INSERTAR USUARIO
+    @POST
+    @Path("insertarusuario")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String insertarDatosPersonales(String data, @Context HttpHeaders headers) {
+        Gson gson = new Gson();
+        JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
 
-        int idPersona = request.get("codigopersona").getAsInt();
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
 
-        TypedQuery<Object[]> tq = em.createNamedQuery("Usuario.obtenerUsuarioPorIdPersona", Object[].class);
-        Tipousuario tipoUsuario = em.find(Tipousuario.class, 3);
-        tq.setParameter("idTipoUsuario", tipoUsuario);
-        tq.setParameter("idPersona", idPersona);
+        if (idToken != null) {
+            String denoTipoUsuario = request.get("denoTipoUsuario").getAsString();
+            String idUsuario = request.get("idUsuario").getAsString();
+            String passUsuario = request.get("passUsuario").getAsString();
 
-        Object[] usuario = tq.getSingleResult();
-        Map<String, Object> map = new HashMap<>();
-        map.put("idPersona", usuario[0]);
-        map.put("denoTipoDocumento", usuario[1]);
-        map.put("docuPersona", usuario[2]);
-        map.put("apPaPersona", usuario[3]);
-        map.put("apMaPersona", usuario[4]);
-        map.put("nombPersona", usuario[5]);
-        map.put("celuPersona", usuario[6]);
-        map.put("emailPersona", usuario[7]);
+            Tipousuario tipoUsuario = new TipousuarioFacadeREST().obtenerTipoUsuario(denoTipoUsuario);
+            Datospersonales datosPersonales = new DatospersonalesFacadeREST().obtenerDatosPersonales(idUsuario);
+            try {
+                em.getTransaction().begin();
+                Usuario usuario = new Usuario();
+                usuario.setIdUsuario(idUsuario);
+                usuario.setIdTipoUsuario(tipoUsuario);
+                usuario.setIdPersona(datosPersonales);
+                usuario.setPassUsuario(passUsuario);
 
-        return g.toJson(map);
-    }*/
+                em.persist(usuario);
+                em.getTransaction().commit();
+                response.addProperty("success", Boolean.TRUE);
+            } catch (Exception e) {
+                response.addProperty("success", Boolean.FALSE);
+            }
+            response.addProperty("resultado", "ok");
+        } else {
+            response.addProperty("resultado", "error");
+        }
+
+        return gson.toJson(response);
+    }
+
+    // METODO PARA ELIMINAR EL USUARIO
+    @POST
+    @Path("eliminarusuario")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String eliminarUsuario(String data, @Context HttpHeaders headers) {
+        Gson gson = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
+
+        if (idToken != null) {
+            String idUsuario = request.get("idUsuario").getAsString();
+
+            try {
+                em.getTransaction().begin();
+                Usuario usuario = em.find(Usuario.class, idUsuario);
+
+                if (usuario != null) {
+                    em.remove(usuario);
+                    em.getTransaction().commit();
+                    response.addProperty("success", Boolean.TRUE);
+                } else {
+                    response.addProperty("success", Boolean.FALSE);
+                }
+            } catch (Exception ex) {
+                response.addProperty("success", Boolean.FALSE);
+            }
+            response.addProperty("resultado", "ok");
+        } else {
+            response.addProperty("resultado", "error");
+        }
+
+        return gson.toJson(response);
+    }
 }

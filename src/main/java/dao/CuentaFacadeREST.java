@@ -1,15 +1,24 @@
 package dao;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import service.AbstractFacade;
 import dto.Cuenta;
+import dto.Tipocuenta;
+import dto.Usuario;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -22,7 +31,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import security.JWT;
 
 /**
  *
@@ -95,50 +107,179 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
 
     @GET
     @Path("listarcuenta")
-    public String listarCuentasEmp() {
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String listarCuentasActivas() {
         Gson g = new Gson();
-        TypedQuery<Object[]> query = em.createNamedQuery("Cuenta.listarcuentaEmp", Object[].class);
-
-        List<Object[]> resultList = query.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaCuentaEmp(resultList);
+        TypedQuery<Object[]> tq = em.createNamedQuery("Cuenta.listarCuentasActivas", Object[].class);
+        tq.setParameter("estadoCuenta", "Activo");
+        List<Object[]> resultList = tq.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaCuentasActivas(resultList);
 
         return g.toJson(listaMapas);
     }
-    
-    private List<Map<String, Object>> listarMapaCuentaEmp(List<Object[]> resultList) {
+
+    private List<Map<String, Object>> listarMapaCuentasActivas(List<Object[]> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
         for (Object[] result : resultList) {
             Map<String, Object> mapa = new HashMap<>();
-            mapa.put("apPaPersona", result[0]);
-            mapa.put("apMaPersona", result[1]);
-            mapa.put("nombPersona", result[2]);
-            mapa.put("denoTipoCuenta", result[3]);
-            mapa.put("numbCuenta", result[4]);
-            mapa.put("saldoDisponible", result[5]);
-            mapa.put("saldoContable", result[6]);
-            mapa.put("estadoCuenta", result[7]);
-            mapa.put("fechaApertura", result[8]);
+            mapa.put("idCuenta", result[0]);
+            mapa.put("apPaPersona", result[1]);
+            mapa.put("apMaPersona", result[2]);
+            mapa.put("nombPersona", result[3]);
+            mapa.put("denoTipoCuenta", result[4]);
+            mapa.put("numbCuenta", result[5]);
+            mapa.put("saldoDisponible", result[6]);
+            mapa.put("saldoContable", result[7]);
+            mapa.put("estadoCuenta", result[8]);
+            mapa.put("fechaApertura", result[9]);
 
             listaMapas.add(mapa);
         }
         return listaMapas;
     }
-    
-     public Cuenta obtenerPorNumCuenta(String NumberCuenta) {
-        EntityManager em = getEntityManager();
-        try {
-            Query query = em.createNamedQuery("Cuenta.findByNumbCuenta");
-            query.setParameter("numbCuenta", NumberCuenta);
 
-            List<Cuenta> results = query.getResultList();
+    public Cuenta obtenerPorNumCuenta(String numbCuenta) {
+        Query query = em.createNamedQuery("Cuenta.findByNumbCuenta");
+        query.setParameter("numbCuenta", numbCuenta);
 
-            if (!results.isEmpty()) {
-                return results.get(0);
-            } else {
-                return null;
-            }
-        } finally {
-            em.close();
+        List<Cuenta> results = query.getResultList();
+
+        if (!results.isEmpty()) {
+            return results.get(0);
+        } else {
+            return null;
         }
+    }
+
+    public int obtenerNuevoNumbCuenta() {
+        TypedQuery<String> tq = em.createNamedQuery("Cuenta.findLastNumbCuenta", String.class);
+        tq.setMaxResults(1);
+
+        try {
+            String ultimoNumbCuenta = tq.getSingleResult();
+            int numbCuenta = Integer.parseInt(ultimoNumbCuenta.substring(8)) + 1;
+            return numbCuenta;
+        } catch (NoResultException e) {
+            return 0;
+        }
+    }
+
+    // METODO PARA INSERTAR CUENTA
+    @POST
+    @Path("insertarcuenta")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String insertarCuenta(String data, @Context HttpHeaders headers) throws ParseException {
+        Gson g = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
+
+        if (idToken != null) {
+            String idUsuario = request.get("idUsuario").getAsString();
+            String denoTipoCuenta = request.get("denoTipoCuenta").getAsString();
+            double saldoDisponible = request.get("saldoDisponible").getAsDouble();
+            double saldoContable = request.get("saldoContable").getAsDouble();
+
+            Date fechaApertura = Calendar.getInstance().getTime();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(fechaApertura);
+            calendar.add(Calendar.YEAR, 5);
+            Date fechaCierre = calendar.getTime();
+
+            String codEntidad = "0017";
+            String codSucursal = "0300";
+            int nuevoNumbCuenta = obtenerNuevoNumbCuenta() == 0 ? 100001 : obtenerNuevoNumbCuenta();
+            String numCuenta = String.format("%08d", nuevoNumbCuenta);
+
+            String numbCuenta = codEntidad + codSucursal + numCuenta;
+
+            String cod3Entidad = codEntidad.substring(codEntidad.length() - 3);
+            String cod3Sucursal = codSucursal.substring(codSucursal.length() - 3);
+            String ceros = "0000";
+            String numCuentaConCeros = ceros + numCuenta;
+            String numeroAleatorio = String.format("%02d", new Random().nextInt(100));
+            String cci = cod3Entidad + cod3Sucursal + numCuentaConCeros + numeroAleatorio;
+
+            Tipocuenta tipoCuenta = new TipocuentaFacadeREST().obtenerTipoCuenta(denoTipoCuenta);
+            Usuario usuario = new Usuario(idUsuario);
+            try {
+                em.getTransaction().begin();
+                Cuenta cuenta = new Cuenta();
+                cuenta.setIdUsuario(usuario);
+                cuenta.setIdTipoCuenta(tipoCuenta);
+                cuenta.setNumbCuenta(numbCuenta);
+                cuenta.setCci(cci);
+                cuenta.setSaldoDisponible(saldoDisponible);
+                cuenta.setSaldoContable(saldoContable);
+                cuenta.setEstadoCuenta("Activo");
+                cuenta.setFechaApertura(fechaApertura);
+                cuenta.setFechaCierre(fechaCierre);
+
+                em.persist(cuenta);
+                em.getTransaction().commit();
+                response.addProperty("success", Boolean.TRUE);
+            } catch (Exception e) {
+                response.addProperty("success", Boolean.FALSE);
+            }
+            response.addProperty("resultado", "ok");
+        } else {
+            response.addProperty("resultado", "error");
+        }
+
+        return g.toJson(response);
+    }
+
+    // METODO PARA ELIMINAR EL USUARIO
+    @POST
+    @Path("eliminarcuenta")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String eliminarCuenta(String data, @Context HttpHeaders headers) {
+        Gson gson = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
+
+        if (idToken != null) {
+            int idCuenta = request.get("idCuenta").getAsInt();
+
+            try {
+                em.getTransaction().begin();
+                Cuenta cuenta = em.find(Cuenta.class, idCuenta);
+
+                if (cuenta != null) {
+                    cuenta.setEstadoCuenta("Inactivo");
+                    em.merge(cuenta);
+                    em.getTransaction().commit();
+                    response.addProperty("success", Boolean.TRUE);
+                } else {
+                    response.addProperty("success", Boolean.FALSE);
+                }
+            } catch (Exception ex) {
+                response.addProperty("success", Boolean.FALSE);
+            }
+            response.addProperty("resultado", "ok");
+        } else {
+            response.addProperty("resultado", "error");
+        }
+
+        return gson.toJson(response);
+    }
+
+    // METODO PARA LA OBTENCION DEL TOKEN CLIENT DE LA AUTHORIZATION BEARER
+    private String extraerTokenHeader(HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+
+        return null;
     }
 }

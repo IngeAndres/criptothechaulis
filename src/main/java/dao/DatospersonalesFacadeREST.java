@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -115,11 +116,11 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         String idToken = JWT.verifyToken(tokenClient);
 
         if (idToken != null) {
-            TypedQuery<Object[]> query = em.createNamedQuery("Datospersonales.listar", Object[].class);
-            List<Object[]> resultList = query.getResultList();
-            List<Map<String, Object>> listaMapas = listarMapaDatosPersonales(resultList);
+            TypedQuery<Object[]> tq = em.createNamedQuery("Datospersonales.listar", Object[].class);
+            List<Object[]> list = tq.getResultList();
+            List<Map<String, Object>> mapList = listarMapaDatosPersonales(list);
             response.addProperty("resultado", "ok");
-            response.add("datos", g.toJsonTree(listaMapas));
+            response.add("datos", g.toJsonTree(mapList));
         } else {
             response.addProperty("resultado", "error");
         }
@@ -132,16 +133,16 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
 
         for (Object[] result : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idPersona", result[0]);
-            mapa.put("denoTipoDocumento", result[1]);
-            mapa.put("docuPersona", result[2]);
-            mapa.put("apPaPersona", result[3]);
-            mapa.put("apMaPersona", result[4]);
-            mapa.put("nombPersona", result[5]);
-            mapa.put("celuPersona", result[6]);
-            mapa.put("emailPersona", result[7]);
-            listaMapas.add(mapa);
+            Map<String, Object> map = new HashMap<>();
+            map.put("idPersona", result[0]);
+            map.put("denoTipoDocumento", result[1]);
+            map.put("docuPersona", result[2]);
+            map.put("apPaPersona", result[3]);
+            map.put("apMaPersona", result[4]);
+            map.put("nombPersona", result[5]);
+            map.put("celuPersona", result[6]);
+            map.put("emailPersona", result[7]);
+            listaMapas.add(map);
         }
 
         return listaMapas;
@@ -187,6 +188,47 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         }
 
         return g.toJson(response);
+    }
+
+    // METODO PARA OBTENER DATOS PERSONALES POR DOCUPERSONA
+    public Datospersonales obtenerDatosPersonales(String docuPersona) {
+        TypedQuery<Datospersonales> tq = em.createNamedQuery("Datospersonales.findByDocuPersona", Datospersonales.class);
+        tq.setParameter("docuPersona", docuPersona);
+
+        try {
+            Datospersonales tipoDocumento = tq.getSingleResult();
+            return tipoDocumento;
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    // METODO PARA LISTAR DOCUPERSONA
+    @GET
+    @Path("listardocupersona")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String listarDocuPersona() {
+        Gson g = new Gson();
+
+        TypedQuery<String> query = em.createNamedQuery("Datospersonales.obtenerDocuSinUsuario", String.class);
+        List<String> resultList = query.getResultList();
+        List<Map<String, Object>> listaMapas = listarMapaDocuPersona(resultList);
+
+        return g.toJson(listaMapas);
+    }
+
+    // METODO PARA LISTAR DOCUPERSONA EN MAPAS
+    private List<Map<String, Object>> listarMapaDocuPersona(List<String> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+
+        for (String result : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("docuPersona", result);
+            listaMapas.add(mapa);
+        }
+
+        return listaMapas;
     }
 
     // METODO PARA INSERTAR LOS DATOS PERSONALES
@@ -369,38 +411,5 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         }
 
         return null;
-    }
-
-    // METODO PARA LISTAR DOCUPERSONA
-    @GET
-    @Path("listardocupersona")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String listarDocuPersona() {
-        Gson g = new Gson();
-
-        TypedQuery<Datospersonales> query = em.createNamedQuery("Datospersonales.findAll", Datospersonales.class);
-        List<Datospersonales> resultList = query.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaDocuPersona(resultList);
-
-        return g.toJson(listaMapas);
-    }
-
-    // METODO PARA LISTAR DOCUPERSONA EN MAPAS
-    private List<Map<String, Object>> listarMapaDocuPersona(List<Datospersonales> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
-
-        for (Datospersonales result : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("docuPersona", result.getDocuPersona());
-            listaMapas.add(mapa);
-        }
-
-        return listaMapas;
-    }
-
-    public static void main(String[] args) {
-        DatospersonalesFacadeREST dfrest = new DatospersonalesFacadeREST();
-        System.out.println(dfrest.listarDocuPersona());
     }
 }
