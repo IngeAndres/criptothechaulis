@@ -31,8 +31,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Usuario.findByPassUsuario", query = "SELECT u FROM Usuario u WHERE u.passUsuario = :passUsuario"),
     @NamedQuery(name = "Usuario.findByAutenticacion", query = "SELECT u FROM Usuario u WHERE u.autenticacion = :autenticacion"),
     @NamedQuery(
-            name = "Usuario.listarUsuarios",
-            query = "SELECT d.idPersona, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona, d.celuPersona, d.emailPersona "
+            name = "Usuario.listar",
+            query = "SELECT u.idUsuario, t.denoTipoDocumento, d.docuPersona, d.apPaPersona, d.apMaPersona, d.nombPersona "
             + "FROM Usuario u "
             + "JOIN u.idPersona d "
             + "JOIN d.idTipoDocumento t "

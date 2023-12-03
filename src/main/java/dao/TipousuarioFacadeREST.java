@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -101,23 +102,36 @@ public class TipousuarioFacadeREST extends AbstractFacade<Tipousuario> {
         Gson g = new Gson();
 
         TypedQuery<Tipousuario> tq = em.createNamedQuery("Tipousuario.findAll", Tipousuario.class);
-        List<Tipousuario> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaTiposUsuario(resultList);
+        List<Tipousuario> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaTipoUsuario(list);
 
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LOS TIPOS DE USUARIO EN MAPAS
-    private List<Map<String, Object>> listarMapaTiposUsuario(List<Tipousuario> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    // METODO PARA LISTAR LOS MAPAS DE TIPO DE USUARIO
+    private List<Map<String, Object>> listarMapaTipoUsuario(List<Tipousuario> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (Tipousuario tipoDocumento : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idTipoUsuario", tipoDocumento.getIdTipoUsuario());
-            mapa.put("denoTipoUsuario", tipoDocumento.getDenoTipoUsuario());
-            listaMapas.add(mapa);
+        for (Tipousuario tipoUsuario : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idTipoUsuario", tipoUsuario.getIdTipoUsuario());
+            map.put("denoTipoUsuario", tipoUsuario.getDenoTipoUsuario());
+            mapList.add(map);
         }
 
-        return listaMapas;
+        return mapList;
+    }
+    
+    // METODO PARA OBTENER EL TIPO DE USUARIO POR DENO TIPO USUARIO
+    public Tipousuario obtenerTipoUsuario(String denoTipoUsuario) {
+        TypedQuery<Tipousuario> tq = em.createNamedQuery("Tipousuario.findByDenoTipoUsuario", Tipousuario.class);
+        tq.setParameter("denoTipoUsuario", denoTipoUsuario);
+
+        try {
+            Tipousuario tipoUsuario = tq.getSingleResult();
+            return tipoUsuario;
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

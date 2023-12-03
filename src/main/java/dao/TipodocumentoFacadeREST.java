@@ -102,27 +102,27 @@ public class TipodocumentoFacadeREST extends AbstractFacade<Tipodocumento> {
         Gson g = new Gson();
 
         TypedQuery<Tipodocumento> query = em.createNamedQuery("Tipodocumento.findAll", Tipodocumento.class);
-        List<Tipodocumento> resultList = query.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaTiposDocumento(resultList);
+        List<Tipodocumento> list = query.getResultList();
+        List<Map<String, Object>> mapList = listarMapaTipoDocumento(list);
 
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LOS TIPOS DE DOCUMENTO EN MAPAS
-    private List<Map<String, Object>> listarMapaTiposDocumento(List<Tipodocumento> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    // METODO PARA LISTAR LOS MAPAS DE TIPO DE DOCUMENTO 
+    private List<Map<String, Object>> listarMapaTipoDocumento(List<Tipodocumento> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (Tipodocumento tipoDocumento : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idTipoDocumento", tipoDocumento.getIdTipoDocumento());
-            mapa.put("denoTipoDocumento", tipoDocumento.getDenoTipoDocumento());
-            listaMapas.add(mapa);
+        for (Tipodocumento tipoDocumento : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idTipoDocumento", tipoDocumento.getIdTipoDocumento());
+            map.put("denoTipoDocumento", tipoDocumento.getDenoTipoDocumento());
+            mapList.add(map);
         }
 
-        return listaMapas;
+        return mapList;
     }
 
-    // METODO PARA OBTENER EL TIPO DE DOCUMENTO POR DENOTIPODOCUMENTO
+    // METODO PARA OBTENER EL TIPO DE DOCUMENTO POR DENO TIPO DOCUMENTO
     public Tipodocumento obtenerTipoDocumento(String denoTipoDocumento) {
         TypedQuery<Tipodocumento> tq = em.createNamedQuery("Tipodocumento.findByDenoTipoDocumento", Tipodocumento.class);
         tq.setParameter("denoTipoDocumento", denoTipoDocumento);

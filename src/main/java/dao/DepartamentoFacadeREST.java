@@ -94,31 +94,30 @@ public class DepartamentoFacadeREST extends AbstractFacade<Departamento> {
 
     // METODO PARA LISTAR LOS DEPARTAMENTOS
     @GET
-    @Path("listardepartamento")
+    @Path("listardepartamentos")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String listarDepartamentos() {
         Gson g = new Gson();
 
         TypedQuery<Departamento> tq = em.createNamedQuery("Departamento.findAll", Departamento.class);
+        List<Departamento> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaDepartamentos(list);
 
-        List<Departamento> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaDepartamentos(resultList);
-
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LOS DEPARTAMENTOS EN MAPAS
-    private List<Map<String, Object>> listarMapaDepartamentos(List<Departamento> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    // METODO PARA LISTAR LOS MAPAS DE DEPARTAMENTOS
+    private List<Map<String, Object>> listarMapaDepartamentos(List<Departamento> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
         
-        for (Departamento departamento : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idDepartamento", departamento.getIdDepartamento());
-            mapa.put("denoDepartamento", departamento.getDenoDepartamento());
-            listaMapas.add(mapa);
+        for (Departamento departamento : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idDepartamento", departamento.getIdDepartamento());
+            map.put("denoDepartamento", departamento.getDenoDepartamento());
+            mapList.add(map);
         }
         
-        return listaMapas;
+        return mapList;
     }
 }

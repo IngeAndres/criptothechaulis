@@ -55,7 +55,10 @@ import javax.xml.bind.annotation.XmlTransient;
             + "JOIN d.idDistrito di "
             + "JOIN di.idProvincia p "
             + "JOIN p.idDepartamento de "
-            + "WHERE d.idPersona = :idPersona")
+            + "WHERE d.idPersona = :idPersona"),
+    @NamedQuery(name = "Datospersonales.obtenerDocuSinUsuario",
+            query = "SELECT d.docuPersona FROM Datospersonales d WHERE d.docuPersona NOT IN (SELECT u.idUsuario FROM Usuario u)")
+
 })
 public class Datospersonales implements Serializable {
 

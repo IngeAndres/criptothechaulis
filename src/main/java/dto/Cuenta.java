@@ -40,11 +40,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Cuenta.findByEstadoCuenta", query = "SELECT c FROM Cuenta c WHERE c.estadoCuenta = :estadoCuenta"),
     @NamedQuery(name = "Cuenta.findByFechaApertura", query = "SELECT c FROM Cuenta c WHERE c.fechaApertura = :fechaApertura"),
     @NamedQuery(name = "Cuenta.findByFechaCierre", query = "SELECT c FROM Cuenta c WHERE c.fechaCierre = :fechaCierre"),
-    @NamedQuery(name = "Cuenta.listarcuentaEmp", query = "SELECT dp.apPaPersona, dp.apMaPersona, dp.nombPersona ,tc.denoTipoCuenta ,c.numbCuenta, c.saldoDisponible, c.saldoContable, c.estadoCuenta, c.fechaApertura "
+    @NamedQuery(name = "Cuenta.listarCuentasActivas", query = "SELECT c.idCuenta, dp.apPaPersona, dp.apMaPersona, dp.nombPersona ,tc.denoTipoCuenta ,c.numbCuenta, c.saldoDisponible, c.saldoContable, c.estadoCuenta, c.fechaApertura "
             + "FROM Cuenta c "
             + "JOIN c.idUsuario u "
             + "JOIN c.idTipoCuenta tc "
-            + "JOIN u.idPersona dp ")})
+            + "JOIN u.idPersona dp "
+            + "WHERE c.estadoCuenta= :estadoCuenta"),
+    @NamedQuery(name = "Cuenta.findLastNumbCuenta", query = "SELECT c.numbCuenta FROM Cuenta c ORDER BY c.numbCuenta DESC")})
 public class Cuenta implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -15,8 +15,8 @@ public class JWT {
     // Autogenera una clave para firmar y verificar tokens
     private static final Key SECRET_KEY = generateSecretKey();
 
-    // Tiempo de expiración del token en milisegundos (en este caso, 5 minutos)
-    private static final int EXPIRATION_TIME = 300000;
+    // Tiempo de expiración del token en milisegundos (en este caso, 10 minutos)
+    private static final int EXPIRATION_TIME = 600000;
 
     /**
      * Genera una clave secreta utilizando un par de claves asimétricas.
