@@ -1,11 +1,17 @@
 package dao;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import static dao.UsuarioFacadeREST.secret;
 import service.AbstractFacade;
 import dto.Operacionesotrascuentas;
+import dto.Usuario;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,7 +20,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import org.jboss.aerogear.security.otp.Totp;
 
 /**
  *
@@ -84,4 +92,38 @@ public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacione
         return em;
     }
 
+    // METODO PARA LA OBTENCION DEL TOKEN CLIENT DE LA AUTHORIZATION BEARER
+    private String extraerTokenHeader(HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+
+        return null;
+    }
+    
+    //METODO PARA TRANSFERIR DINERO
+    @POST
+    @Path("transferirdinero")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String transferirDinero(String data) {
+        Gson g = new Gson();
+        JsonObject response = new JsonObject();
+        JsonObject request = JsonParser.parseString(data).getAsJsonObject();
+        
+        String numbCntaOrig = request.get("cuentaOrigen").getAsString();
+        String numbCntaDest = request.get("cuentaDestino").getAsString();
+        double monto = request.get("monto").getAsDouble();
+        String moneda = request.get("moneda").getAsString();
+        
+        Operacionesotrascuentas cntaOrig = null;
+        
+    }
+    
+    //METODO PARA OBTENER LA CUENTA POR NUMERO DE CUENTA
+    private Operacionesotrascuentas getCntaWithNumbCnta (String numbCnta) {
+        TypedQuery<Object[]> tq = em.createNamedQuery("O")
+    }
 }

@@ -31,7 +31,16 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Operacionesotrascuentas.findByIdOperacionOC", query = "SELECT o FROM Operacionesotrascuentas o WHERE o.idOperacionOC = :idOperacionOC"),
     @NamedQuery(name = "Operacionesotrascuentas.findByMontoOperacionOC", query = "SELECT o FROM Operacionesotrascuentas o WHERE o.montoOperacionOC = :montoOperacionOC"),
     @NamedQuery(name = "Operacionesotrascuentas.findByMonedaOperacionOC", query = "SELECT o FROM Operacionesotrascuentas o WHERE o.monedaOperacionOC = :monedaOperacionOC"),
-    @NamedQuery(name = "Operacionesotrascuentas.findByFechaOperacionOC", query = "SELECT o FROM Operacionesotrascuentas o WHERE o.fechaOperacionOC = :fechaOperacionOC")})
+    @NamedQuery(name = "Operacionesotrascuentas.findByFechaOperacionOC", query = "SELECT o FROM Operacionesotrascuentas o WHERE o.fechaOperacionOC = :fechaOperacionOC"),
+    @NamedQuery(name = "Operacionesotrascuentas.listar", query = "SELECT t.idOperacionOC, cuo.numbCuenta, clo.apPaPersona, clo.apMaPersona, clo.nombPersona, "
+            + "cud.numbCuenta, cld.apPaPersona, cld.apMaPersona, cld.nombPersona, t.montoOperacionOC, t.monedaOperacionOC, t.fechaOperacionOC "
+            + "FROM Operacionesotrascuentas t "
+            + "JOIN t.idCuentaOrigen cuo "
+            + "JOIN cuo.idUsuario cio "
+            + "JOIN cio.idPersona clo "
+            + "JOIN t.idCuentaDestino cud "
+            + "JOIN cud.idUsuario cid "
+            + "JOIN cid.idPersona cld")})
 public class Operacionesotrascuentas implements Serializable {
 
     private static final long serialVersionUID = 1L;
