@@ -102,27 +102,27 @@ public class TipocuentaFacadeREST extends AbstractFacade<Tipocuenta> {
         Gson g = new Gson();
 
         TypedQuery<Tipocuenta> tq = em.createNamedQuery("Tipocuenta.findAll", Tipocuenta.class);
-        List<Tipocuenta> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaTiposCuenta(resultList);
+        List<Tipocuenta> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaTipoCuenta(list);
 
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LOS TIPOS DE USUARIO EN MAPAS
-    private List<Map<String, Object>> listarMapaTiposCuenta(List<Tipocuenta> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    // METODO PARA LISTAR LOS MAPAS DE TIPO DE CUENTA
+    private List<Map<String, Object>> listarMapaTipoCuenta(List<Tipocuenta> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (Tipocuenta tipoCuenta : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idTipoCuenta", tipoCuenta.getIdTipoCuenta());
-            mapa.put("denoTipoCuenta", tipoCuenta.getDenoTipoCuenta());
-            listaMapas.add(mapa);
+        for (Tipocuenta tipoCuenta : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idTipoCuenta", tipoCuenta.getIdTipoCuenta());
+            map.put("denoTipoCuenta", tipoCuenta.getDenoTipoCuenta());
+            mapList.add(map);
         }
 
-        return listaMapas;
+        return mapList;
     }
     
-    // METODO PARA OBTENER EL TIPO DE CUENTA POR DENOTIPOCUENTA
+    // METODO PARA OBTENER EL TIPO DE CUENTA POR DENO TIPO CUENTA
     public Tipocuenta obtenerTipoCuenta(String denoTipoCuenta) {
         TypedQuery<Tipocuenta> tq = em.createNamedQuery("Tipocuenta.findByDenoTipoCuenta", Tipocuenta.class);
         tq.setParameter("denoTipoCuenta", denoTipoCuenta);

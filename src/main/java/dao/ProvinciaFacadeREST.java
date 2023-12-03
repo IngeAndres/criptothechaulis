@@ -94,7 +94,7 @@ public class ProvinciaFacadeREST extends AbstractFacade<Provincia> {
 
     // METODO PARA LISTAR LAS PROVINCIAS
     @POST
-    @Path("listarprovincia")
+    @Path("listarprovincias")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String listarProvincias(String denoDepartamento) {
@@ -102,23 +102,22 @@ public class ProvinciaFacadeREST extends AbstractFacade<Provincia> {
         
         TypedQuery<String> tq = em.createNamedQuery("Provincia.findByDepartamento", String.class);
         tq.setParameter("denoDepartamento", denoDepartamento);
+        List<String> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaProvincias(list);
         
-        List<String> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaProvincias(resultList);
-        
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LAS PROVINCIAS EN MAPAS
-    private List<Map<String, Object>> listarMapaProvincias(List<String> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    // METODO PARA LISTAR LOS MAPAS DE PROVINCIAS
+    private List<Map<String, Object>> listarMapaProvincias(List<String> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
         
-        for (String provincia : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("denoProvincia", provincia);
-            listaMapas.add(mapa);
+        for (String provincia : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("denoProvincia", provincia);
+            mapList.add(map);
         }
         
-        return listaMapas;
+        return mapList;
     }
 }

@@ -104,7 +104,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
     }
 
     // METODO PARA LISTAR LOS DATOS PERSONALES
-    @POST
+    @GET
     @Path("listardatospersonales")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -128,7 +128,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         return g.toJson(response);
     }
 
-    // METODO PARA LISTAR LOS DATOS PERSONALES EN MAPAS
+    // METODO PARA LISTAR LOS MAPAS DE DATOS PERSONALES
     private List<Map<String, Object>> listarMapaDatosPersonales(List<Object[]> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
 
@@ -148,12 +148,12 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         return listaMapas;
     }
 
-    // METODO PARA OBTENER LOS DATOS PERSONALES POR IDPERSONA
+    // METODO PARA OBTENER LOS DATOS PERSONALES POR ID PERSONA
     @POST
     @Path("obtenerdatospersonales")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String obtenerDatosPersonalesPorId(int idPersona, @Context HttpHeaders headers) {
+    public String obtenerDatosPersonales(int idPersona, @Context HttpHeaders headers) {
         Gson g = new Gson();
         JsonObject response = new JsonObject();
 
@@ -190,7 +190,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         return g.toJson(response);
     }
 
-    // METODO PARA OBTENER DATOS PERSONALES POR DOCUPERSONA
+    // METODO PARA OBTENER DATOS PERSONALES POR DOCU PERSONA
     public Datospersonales obtenerDatosPersonales(String docuPersona) {
         TypedQuery<Datospersonales> tq = em.createNamedQuery("Datospersonales.findByDocuPersona", Datospersonales.class);
         tq.setParameter("docuPersona", docuPersona);
@@ -203,7 +203,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         }
     }
 
-    // METODO PARA LISTAR DOCUPERSONA
+    // METODO PARA LISTAR DOCU PERSONA
     @GET
     @Path("listardocupersona")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -218,7 +218,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         return g.toJson(listaMapas);
     }
 
-    // METODO PARA LISTAR DOCUPERSONA EN MAPAS
+    // METODO PARA LISTAR LOS MAPAS DE DOCU PERSONA
     private List<Map<String, Object>> listarMapaDocuPersona(List<String> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
 
@@ -402,7 +402,7 @@ public class DatospersonalesFacadeREST extends AbstractFacade<Datospersonales> {
         return gson.toJson(response);
     }
 
-    // METODO PARA LA OBTENCION DEL TOKEN CLIENT DE LA AUTHORIZATION BEARER
+    // METODO PARA OBTENER EL TOKEN CLIENT DE LA AUTHORIZATION BEARER
     private String extraerTokenHeader(HttpHeaders headers) {
         String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 

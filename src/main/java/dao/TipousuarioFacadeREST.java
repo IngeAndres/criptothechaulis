@@ -102,27 +102,27 @@ public class TipousuarioFacadeREST extends AbstractFacade<Tipousuario> {
         Gson g = new Gson();
 
         TypedQuery<Tipousuario> tq = em.createNamedQuery("Tipousuario.findAll", Tipousuario.class);
-        List<Tipousuario> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaTiposUsuario(resultList);
+        List<Tipousuario> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaTipoUsuario(list);
 
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LOS TIPOS DE USUARIO EN MAPAS
-    private List<Map<String, Object>> listarMapaTiposUsuario(List<Tipousuario> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    // METODO PARA LISTAR LOS MAPAS DE TIPO DE USUARIO
+    private List<Map<String, Object>> listarMapaTipoUsuario(List<Tipousuario> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (Tipousuario tipoUsuario : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("idTipoUsuario", tipoUsuario.getIdTipoUsuario());
-            mapa.put("denoTipoUsuario", tipoUsuario.getDenoTipoUsuario());
-            listaMapas.add(mapa);
+        for (Tipousuario tipoUsuario : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("idTipoUsuario", tipoUsuario.getIdTipoUsuario());
+            map.put("denoTipoUsuario", tipoUsuario.getDenoTipoUsuario());
+            mapList.add(map);
         }
 
-        return listaMapas;
+        return mapList;
     }
     
-    // METODO PARA OBTENER EL TIPO DE USUARIO POR DENOTIPOUSUARIO
+    // METODO PARA OBTENER EL TIPO DE USUARIO POR DENO TIPO USUARIO
     public Tipousuario obtenerTipoUsuario(String denoTipoUsuario) {
         TypedQuery<Tipousuario> tq = em.createNamedQuery("Tipousuario.findByDenoTipoUsuario", Tipousuario.class);
         tq.setParameter("denoTipoUsuario", denoTipoUsuario);

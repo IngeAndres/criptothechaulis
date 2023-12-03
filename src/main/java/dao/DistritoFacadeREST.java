@@ -94,7 +94,7 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
 
     // METODO PARA LISTAR LOS DISTRITOS
     @POST
-    @Path("listardistrito")
+    @Path("listardistritos")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String listarDistritos(String denoProvincia) {
@@ -102,24 +102,23 @@ public class DistritoFacadeREST extends AbstractFacade<Distrito> {
 
         TypedQuery<String> tq = em.createNamedQuery("Distrito.findByProvincia", String.class);
         tq.setParameter("denoProvincia", denoProvincia);
+        List<String> list = tq.getResultList();
+        List<Map<String, Object>> mapList = listarMapaDistritos(list);
 
-        List<String> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaDistritos(resultList);
-
-        return g.toJson(listaMapas);
+        return g.toJson(mapList);
     }
 
-    //METODO PARA LISTAR LOS DISTRITOS EN MAPAS
-    private List<Map<String, Object>> listarMapaDistritos(List<String> resultList) {
-        List<Map<String, Object>> listaMapas = new ArrayList<>();
+    //METODO PARA LISTAR LOS MAPAS DE DISTRITOS
+    private List<Map<String, Object>> listarMapaDistritos(List<String> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
 
-        for (String distrito : resultList) {
-            Map<String, Object> mapa = new HashMap<>();
-            mapa.put("denoDistrito", distrito);
-            listaMapas.add(mapa);
+        for (String distrito : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("denoDistrito", distrito);
+            mapList.add(map);
         }
         
-        return listaMapas;
+        return mapList;
     }
 
     // METODO PARA OBTENER EL DISTRITO POR DENODISTRITO

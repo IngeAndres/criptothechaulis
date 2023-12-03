@@ -21,7 +21,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -105,20 +104,32 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         return em;
     }
 
+    //METODO PARA LISTAR LAS CUENTAS ACTIVAS
     @GET
-    @Path("listarcuenta")
+    @Path("listarcuentas")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String listarCuentasActivas() {
+    public String listarCuentasActivas(@Context HttpHeaders headers) {
         Gson g = new Gson();
-        TypedQuery<Object[]> tq = em.createNamedQuery("Cuenta.listarCuentasActivas", Object[].class);
-        tq.setParameter("estadoCuenta", "Activo");
-        List<Object[]> resultList = tq.getResultList();
-        List<Map<String, Object>> listaMapas = listarMapaCuentasActivas(resultList);
+        JsonObject response = new JsonObject();
 
-        return g.toJson(listaMapas);
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
+
+        if (idToken != null) {
+            TypedQuery<Object[]> tq = em.createNamedQuery("Cuenta.listarCuentasActivas", Object[].class);
+            tq.setParameter("estadoCuenta", "Activo");
+            List<Object[]> list = tq.getResultList();
+            List<Map<String, Object>> mapList = listarMapaCuentasActivas(list);
+            response.addProperty("resultado", "ok");
+            response.add("datos", g.toJsonTree(mapList));
+        } else {
+            response.addProperty("resultado", "error");
+        }
+        return g.toJson(response);
     }
 
+    // METODO PARA LISTAR LOS MAPAS DE LAS CUENTAS ACTIVAS
     private List<Map<String, Object>> listarMapaCuentasActivas(List<Object[]> resultList) {
         List<Map<String, Object>> listaMapas = new ArrayList<>();
         for (Object[] result : resultList) {
@@ -139,19 +150,20 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         return listaMapas;
     }
 
-    public Cuenta obtenerPorNumCuenta(String numbCuenta) {
-        Query query = em.createNamedQuery("Cuenta.findByNumbCuenta");
-        query.setParameter("numbCuenta", numbCuenta);
+    // METODO PARA OBTENER LA CUENTA POR EL NUMBCUENTA
+    public Cuenta findByNumbCuenta(String numbCuenta) {
+        TypedQuery<Cuenta> tq = em.createNamedQuery("Cuenta.findByNumbCuenta", Cuenta.class);
+        tq.setParameter("numbCuenta", numbCuenta);
 
-        List<Cuenta> results = query.getResultList();
-
-        if (!results.isEmpty()) {
-            return results.get(0);
-        } else {
+        try {
+            Cuenta cuenta = tq.getSingleResult();
+            return cuenta;
+        } catch (NoResultException e) {
             return null;
         }
     }
 
+    // METODO PARA OBTENER EL NUEVO NUMBCUENTA
     public int obtenerNuevoNumbCuenta() {
         TypedQuery<String> tq = em.createNamedQuery("Cuenta.findLastNumbCuenta", String.class);
         tq.setMaxResults(1);
@@ -165,7 +177,7 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         }
     }
 
-    // METODO PARA INSERTAR CUENTA
+    // METODO PARA INSERTAR LA CUENTA
     @POST
     @Path("insertarcuenta")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -233,12 +245,12 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         return g.toJson(response);
     }
 
-    // METODO PARA ELIMINAR EL USUARIO
+    // METODO PARA ELIMINAR LA CUENTA
     @POST
-    @Path("eliminarcuenta")
+    @Path("inhabilitarcuenta")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String eliminarCuenta(String data, @Context HttpHeaders headers) {
+    public String inhabilitarCuenta(String data, @Context HttpHeaders headers) {
         Gson gson = new Gson();
         JsonObject response = new JsonObject();
         JsonObject request = JsonParser.parseString(data).getAsJsonObject();
@@ -272,7 +284,7 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         return gson.toJson(response);
     }
 
-    // METODO PARA LA OBTENCION DEL TOKEN CLIENT DE LA AUTHORIZATION BEARER
+    // METODO PARA OBTENER EL TOKEN CLIENT DE LA AUTHORIZATION BEARER
     private String extraerTokenHeader(HttpHeaders headers) {
         String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 

@@ -170,7 +170,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return g.toJson(response);
     }
 
-    // METODO PARA LA AUTENTICACION DE DOS FACTORES
+    // METODO PARA AUTENTICAR EL FACTOR DE 2 PASOS
     @POST
     @Path("autenticacion")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -234,7 +234,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return g.toJson(response);
     }
 
-    // METODO PARA LA GENERACION DEL URL OTP
+    // METODO PARA GENERAR EL URL OTP
     private boolean generarURL(JsonObject response, String idUsuario, Usuario u) {
         String issuer = "TheChaulis";
         String user = idUsuario;
@@ -250,7 +250,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return false;
     }
 
-    // METODO PARA LA VALIDACION DEL CODIGO DE 6 DIGITOS
+    // METODO PARA VALIDAR EL CODIGO DE 6 DIGITOS
     private boolean autenticarCodigo(Usuario u, String code) {
         String auth = u.getAutenticacion();
 
@@ -264,18 +264,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return code.equals(totp.now());
     }
 
-    // METODO PARA LA OBTENCION DEL TOKEN CLIENT DE LA AUTHORIZATION BEARER
-    private String extraerTokenHeader(HttpHeaders headers) {
-        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7);
-        }
-
-        return null;
-    }
-
-    // METODO DE VALIDACION DE CONTRASEÑA
+    // METODO PARA VALIDAR LA CONTRASEÑA
     private String cambiarContrasena(Usuario u, String pass, String newPass1, String newPass2) {
         if (u.getPassUsuario().equals(pass)) {
             if (newPass1.equals(newPass2)) {
@@ -313,14 +302,13 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
             List<Map<String, Object>> mapList = listarMapaClientes(list);
             response.addProperty("resultado", "ok");
             response.add("datos", g.toJsonTree(mapList));
-
         } else {
             response.addProperty("resultado", "error");
         }
         return g.toJson(response);
     }
 
-    // METODO PARA LISTAR LOS USUARIOS EN MAPAS
+    // METODO PARA LISTAR LOS MAPAS DE CLIENTES
     private List<Map<String, Object>> listarMapaClientes(List<Object[]> list) {
         List<Map<String, Object>> mapList = new ArrayList<>();
 
@@ -338,23 +326,23 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return mapList;
     }
 
-    // METODO PARA LISTAR LOS USUARIOS
+    // METODO PARA LISTAR LOS ID USUARIO
     @GET
-    @Path("listarusuarios")
+    @Path("listaridusuario")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String listarUsuarios() {
+    public String listarIdUsuario() {
         Gson g = new Gson();
 
         TypedQuery<Usuario> tq = em.createNamedQuery("Usuario.findAll", Usuario.class);
         List<Usuario> list = tq.getResultList();
-        List<Map<String, Object>> mapList = listarMapaUsuarios(list);
+        List<Map<String, Object>> mapList = listarMapaIdUsuario(list);
 
         return g.toJson(mapList);
     }
 
-    // METODO PARA LISTAR LOS USUARIOS EN MAPAS
-    private List<Map<String, Object>> listarMapaUsuarios(List<Usuario> list) {
+    // METODO PARA LISTAR LOS MAPAS DE ID USUARIO
+    private List<Map<String, Object>> listarMapaIdUsuario(List<Usuario> list) {
         List<Map<String, Object>> mapList = new ArrayList<>();
 
         for (Usuario usuario : list) {
@@ -366,7 +354,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         return mapList;
     }
 
-    // METODO PARA INSERTAR USUARIO
+    // METODO PARA INSERTAR EL USUARIO
     @POST
     @Path("insertarusuario")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -444,5 +432,16 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         }
 
         return gson.toJson(response);
+    }
+
+    // METODO PARA OBTENER EL TOKEN CLIENT DE LA AUTHORIZATION BEARER
+    private String extraerTokenHeader(HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+
+        return null;
     }
 }

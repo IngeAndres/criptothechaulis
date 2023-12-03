@@ -228,7 +228,7 @@ public class PrestamoFacadeREST extends AbstractFacade<Prestamo> {
         TipocomprobanteFacadeREST tipCom = new TipocomprobanteFacadeREST();
 
         Tipoinformacionbien IngTipoInfo = tipIn.findTipoinformacionbien(IdTipoInfo);
-        Cuenta IngCuenta = cuent.obtenerPorNumCuenta(NumbCuenta);
+        Cuenta IngCuenta = cuent.findByNumbCuenta(NumbCuenta);
         Tipoprestamo IngTipoPres = tipPre.findTipoprestamo(IdTipoPrestamo);
         Tipocomprobante IngTipoComp = tipCom.findTipocomprobante(IdTipoComprobante);
 
