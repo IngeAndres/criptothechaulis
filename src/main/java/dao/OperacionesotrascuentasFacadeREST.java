@@ -7,10 +7,16 @@ import static dao.UsuarioFacadeREST.secret;
 import service.AbstractFacade;
 import dto.Operacionesotrascuentas;
 import dto.Usuario;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -20,9 +26,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.jboss.aerogear.security.otp.Totp;
+import security.JWT;
 
 /**
  *
@@ -33,7 +41,8 @@ import org.jboss.aerogear.security.otp.Totp;
 public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacionesotrascuentas> {
 
     @PersistenceContext(unitName = "com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU")
-    private EntityManager em;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_CriptoTheChaulis_war_1.0-SNAPSHOTPU");
+    private EntityManager em = emf.createEntityManager();
 
     public OperacionesotrascuentasFacadeREST() {
         super(Operacionesotrascuentas.class);
@@ -102,6 +111,54 @@ public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacione
 
         return null;
     }
+
+    //METODO PARA LISTAR LAS TRANSFERENCIAS
+    @GET
+    @Path("listartransferencias")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String listarTransferencias(@Context HttpHeaders headers) {
+        Gson g = new Gson();
+        JsonObject response = new JsonObject();
+
+        String tokenClient = extraerTokenHeader(headers);
+        String idToken = JWT.verifyToken(tokenClient);
+
+        if (true) {
+            TypedQuery<Object[]> tq = em.createNamedQuery("Operacionesotrascuentas.listar", Object[].class);
+            List<Object[]> list = tq.getResultList();
+            List<Map<String, Object>> mapList = listarMapaTransferencias(list);
+            response.addProperty("resultado", "ok");
+            response.add("datos", g.toJsonTree(mapList));
+        } else {
+            response.addProperty("resultado", "error");
+        }
+        return g.toJson(response);
+    }
+
+    // METODO PARA LISTAR LOS MAPAS DE LAS TRANSFERENCIAS
+    private List<Map<String, Object>> listarMapaTransferencias(List<Object[]> resultList) {
+        List<Map<String, Object>> listaMapas = new ArrayList<>();
+        for (Object[] result : resultList) {
+            Map<String, Object> mapa = new HashMap<>();
+            mapa.put("CODTRANSFER", result[0]);
+            mapa.put("NUMECUENTAORIGEN", result[1]);
+            mapa.put("APPAORIGEN", result[2]);
+            mapa.put("APMAORIGEN", result[3]);
+            mapa.put("NOMBORIGEN", result[4]);
+            mapa.put("NUMECUENTADESTINO", result[5]);
+            mapa.put("APPADESTINO", result[6]);
+            mapa.put("APMADESTINO", result[7]);
+            mapa.put("NOMBDESTINO", result[8]);
+            mapa.put("MONTO", result[9]);
+            mapa.put("MONEDA", result[10]);
+            mapa.put("FECHA", result[11]);
+
+            listaMapas.add(mapa);
+        }
+        return listaMapas;
+    }
+
     /*
     //METODO PARA TRANSFERIR DINERO
     @POST
