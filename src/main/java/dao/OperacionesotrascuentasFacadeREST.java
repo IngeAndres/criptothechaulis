@@ -102,7 +102,7 @@ public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacione
 
         return null;
     }
-    
+    /*
     //METODO PARA TRANSFERIR DINERO
     @POST
     @Path("transferirdinero")
@@ -125,5 +125,5 @@ public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacione
     //METODO PARA OBTENER LA CUENTA POR NUMERO DE CUENTA
     private Operacionesotrascuentas getCntaWithNumbCnta (String numbCnta) {
         TypedQuery<Object[]> tq = em.createNamedQuery("O")
-    }
+    }*/
 }
