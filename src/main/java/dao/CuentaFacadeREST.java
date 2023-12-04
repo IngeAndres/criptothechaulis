@@ -135,15 +135,16 @@ public class CuentaFacadeREST extends AbstractFacade<Cuenta> {
         for (Object[] result : resultList) {
             Map<String, Object> mapa = new HashMap<>();
             mapa.put("idCuenta", result[0]);
-            mapa.put("apPaPersona", result[1]);
-            mapa.put("apMaPersona", result[2]);
-            mapa.put("nombPersona", result[3]);
-            mapa.put("denoTipoCuenta", result[4]);
-            mapa.put("numbCuenta", result[5]);
-            mapa.put("saldoDisponible", result[6]);
-            mapa.put("saldoContable", result[7]);
-            mapa.put("estadoCuenta", result[8]);
-            mapa.put("fechaApertura", result[9]);
+            mapa.put("docuPersona", result[1]);
+            mapa.put("apPaPersona", result[2]);
+            mapa.put("apMaPersona", result[3]);
+            mapa.put("nombPersona", result[4]);
+            mapa.put("denoTipoCuenta", result[5]);
+            mapa.put("numbCuenta", result[6]);
+            mapa.put("saldoDisponible", result[7]);
+            mapa.put("saldoContable", result[8]);
+            mapa.put("estadoCuenta", result[9]);
+            mapa.put("fechaApertura", result[10]);
 
             listaMapas.add(mapa);
         }
