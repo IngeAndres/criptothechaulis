@@ -124,7 +124,7 @@ public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacione
         String tokenClient = extraerTokenHeader(headers);
         String idToken = JWT.verifyToken(tokenClient);
 
-        if (true) {
+        if (idToken != null) {
             TypedQuery<Object[]> tq = em.createNamedQuery("Operacionesotrascuentas.listar", Object[].class);
             List<Object[]> list = tq.getResultList();
             List<Map<String, Object>> mapList = listarMapaTransferencias(list);
