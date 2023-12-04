@@ -2,7 +2,6 @@ package dao;
 
 import service.AbstractFacade;
 import dto.Detalleprestamo;
-import dto.Prestamo;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

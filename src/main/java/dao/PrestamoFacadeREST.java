@@ -161,7 +161,6 @@ public class PrestamoFacadeREST extends AbstractFacade<Prestamo> {
     }
 
     public Integer registrarDetPrestamos(Detalleprestamo registrarDetPrest) {
-        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(registrarDetPrest);
@@ -175,7 +174,6 @@ public class PrestamoFacadeREST extends AbstractFacade<Prestamo> {
     }
 
     public boolean registrarPrestamos(Prestamo registrarPrest) {
-        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(registrarPrest);
