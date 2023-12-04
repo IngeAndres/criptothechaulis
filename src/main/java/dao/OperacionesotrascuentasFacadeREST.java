@@ -112,7 +112,7 @@ public class OperacionesotrascuentasFacadeREST extends AbstractFacade<Operacione
         return null;
     }
 
-    //METODO PARA LISTAR LAS TRANSFERENCIAS
+    //METODO PARA LISTAR TRANSFERENCIAS
     @GET
     @Path("listartransferencias")
     @Consumes(MediaType.APPLICATION_JSON)
