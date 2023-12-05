@@ -33,6 +33,8 @@ public class ApplicationConfig extends Application {
         resources.add(dao.OperacionesotrascuentasFacadeREST.class);
         resources.add(dao.PrestamoFacadeREST.class);
         resources.add(dao.ProvinciaFacadeREST.class);
+        resources.add(dao.RolFacadeREST.class);
+        resources.add(dao.RolusuarioFacadeREST.class);
         resources.add(dao.TipocomprobanteFacadeREST.class);
         resources.add(dao.TipocuentaFacadeREST.class);
         resources.add(dao.TipodocumentoFacadeREST.class);
